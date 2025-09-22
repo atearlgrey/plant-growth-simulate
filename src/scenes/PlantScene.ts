@@ -1,154 +1,160 @@
 import Phaser from 'phaser';
 import SceneKeys from 'consts/SceneKeys';
-import Plant from '../objects/Plant';
-import MenuScene from './MenuScene';
+import TextureKeys from 'consts/TextureKeys';
+import LeftPanel from 'objects/MenuLeft';
+import RightPanel from 'objects/MenuRight';
+import TimelineSlider from 'objects/TimelineSlider';
+import Table from 'objects/Table';
+import Pot from 'objects/PlantPot';
+import Plant from 'objects/Plant';
 
 export default class PlantScene extends Phaser.Scene {
   private plant!: Plant;
+  private slider!: TimelineSlider;
   private growthData: any;
   private currentWeek: number = 0;
   private plantType: string = 'lettuce';
   private lightMode: string = 'sun';
+
+  private table!: Table;
+  private pot!: Pot;
+  private background!: Phaser.GameObjects.TileSprite;
+  private leftMenu!: LeftPanel;
+  private rightMenu!: RightPanel;
 
   constructor() {
     super(SceneKeys.Plant);
   }
 
   preload() {
-    // load data và asset cơ bản
     this.load.json('growthData', '/data/growth.json');
-    this.load.image('background', '/assets/bg.png');
-    this.load.image('table', '/assets/table.png');
   }
 
   create() {
     const { width, height } = this.scale;
 
-    // background
-    this.add
-      .tileSprite(0, 0, width, height, 'background')
-      .setOrigin(0)
-      .setScrollFactor(0, 0)
-      .setName('background');
+    // init UI + layout
+    this.layoutScene(width, height);
 
-    // ===== BÀN + KHUNG KÍNH =====
-    this.add
-      .image(width / 2, height / 2 + 80, 'table')
-      .setOrigin(0.5)
-      .setScale(0.4)
-      .setName('table');
-
-    // this.add
-    //   .rectangle(width / 2, height / 2 - 20, 300, 200, 0x000000)
-    //   .setStrokeStyle(3, 0xffffff)
-    //   .setOrigin(0.5)
-    //   .setName('cabinet');
-
-    // this.add
-    //   .text(width / 2, height / 2 - 140, 'Cái tủ kính', {
-    //     fontSize: '16px',
-    //     color: '#fff',
-    //   })
-    //   .setOrigin(0.5);
-
-    // data cây
+    // load data cây
     this.growthData = this.cache.json.get('growthData');
-
-    // tạo cây mặc định
-    this.spawnPlant();
-
-    // bật menu
-    this.scene.launch('MenuScene');
-    const menu = this.scene.get('MenuScene') as MenuScene;
-
-    // gắn sự kiện menu
-    menu.events.on('pause-toggle', () => {
-      if (this.scene.isPaused()) {
-        this.scene.resume();
-      } else {
-        this.scene.pause();
-      }
-    });
-
-    menu.events.on('reset', () => {
-      this.currentWeek = 0;
-      this.plant.setWeek(0);
-      menu.events.emit('set-week', 0);
-    });
-
-    menu.events.on('show-result', () => {
-      console.log('Hiện kết quả theo tuần');
-    });
-
-    menu.events.on('show-conclusion', () => {
-      console.log('Hiện kết luận');
-    });
-
-    menu.events.on('select-plant', (plant: string) => {
-      this.plantType = plant;
-      this.resetPlant();
-    });
-
-    menu.events.on('select-light', (mode: string) => {
-      this.lightMode = mode;
-      this.resetPlant();
-    });
-
-    // thử bấm phím N để qua tuần
-    this.input.keyboard.on('keydown-N', () => {
-      this.currentWeek = Math.min(this.currentWeek + 1, 4);
-      this.plant.setWeek(this.currentWeek);
-      menu.events.emit('set-week', this.currentWeek);
-    });
 
     // === HANDLE RESIZE ===
     this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
-      const { width, height } = gameSize;
-
-      // background
-      const background = this.children.getByName(
-        'background'
-      ) as Phaser.GameObjects.TileSprite;
-      if (background) {
-        background.setSize(width, height);
-      }
-
-      // bàn
-      const table = this.children.getByName('table') as Phaser.GameObjects.Image;
-      if (table) {
-        table.setPosition(width / 2, height / 2 + 80);
-      }
+      this.layoutScene(gameSize.width, gameSize.height);
     });
   }
 
-  private spawnPlant() {
-    const { width, height } = this.scale;
-    this.plant = new Plant(
-      this,
-      width / 2,
-      height / 2,
-      this.plantType,
-      this.lightMode,
-      this.growthData
-    );
-    this.input.setDraggable(this.plant);
+  /** Hàm layout: setup hoặc update vị trí object khi resize */
+  private layoutScene(width: number, height: number) {
+    // Background
+    if (!this.background) {
+      this.background = this.add
+        .tileSprite(0, 0, width, height, 'background')
+        .setOrigin(0)
+        .setScrollFactor(0, 0)
+        .setName('background');
+    } else {
+      this.background.setSize(width, height);
+    }
 
-    // khởi tạo ở tuần 0
-    this.plant.setWeek(this.currentWeek);
+    // Table
+    if (!this.table) {
+      this.table = new Table(this, width / 2, height / 2 + 80);
+    } else {
+      this.table.setPosition(width / 2, height / 2 + 80);
+    }
 
-    // drag logic
-    this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-      if (gameObject === this.plant) {
-        gameObject.x = dragX;
-        gameObject.y = dragY;
-      }
-    });
+    // Pot
+    if (!this.pot) {
+      this.pot = new Pot(this, width / 2, height / 2 - 35);
+
+      // Khi lá thả vào chậu thành công → tạo Plant
+      this.pot.on('plant-drop', (plantType: string) => {
+        console.log('Đã thả cây vào chậu:', plantType);
+
+        this.plant?.destroy(); // replace cây cũ
+
+        this.plant = new Plant(
+          this,
+          this.pot.x,
+          this.pot.y - this.pot.displayHeight / 4,
+          plantType,
+          this.lightMode,
+          this.growthData
+        );
+        this.plant.setWeek(this.currentWeek);
+      });
+    } else {
+      this.pot.setPosition(width / 2, height / 2 - 35);
+    }
+
+    // Left menu
+    if (!this.leftMenu) {
+      this.leftMenu = new LeftPanel(this, 50, 100);
+      this.leftMenu.on('pause', () => this.scene.pause());
+      this.leftMenu.on('reset', () => this.resetPlant());
+      this.leftMenu.on('result', () => console.log('Hiện kết quả'));
+      this.leftMenu.on('conclusion', () => console.log('Hiện kết luận'));
+    } else {
+      this.leftMenu.setPosition(50, 100);
+    }
+
+    // Right menu
+    if (!this.rightMenu) {
+      this.rightMenu = new RightPanel(this, width - 220, 50);
+
+      // Khi leaf được tạo từ RightMenu → chuyển cho Pot check
+      this.rightMenu.on('leaf-drag', ({ leaf, plantType }) => {
+        this.pot.checkDrop(leaf, plantType);
+      });
+
+      this.rightMenu.on('light', (mode: string) => {
+        console.log('Light mode:', mode);
+        this.lightMode = mode;
+      });
+    } else {
+      this.rightMenu.setPosition(width - 220, 50);
+    }
+
+    // Slider
+    if (this.slider) {
+      const lastWeek = this.slider.getWeek();
+      this.slider.destroy();
+
+      this.slider = new TimelineSlider(this, width, height, this.slider['totalWeeks']);
+      this.add.existing(this.slider);
+
+      this.slider.onWeekChanged((week) => {
+        this.currentWeek = week;
+        this.events.emit('set-week', week);
+      });
+
+      this.events.on('set-week', (week: number) => {
+        this.slider.setWeek(week);
+      });
+
+      this.slider.setWeek(lastWeek);
+    } else {
+      this.slider = new TimelineSlider(this, width, height, 4);
+      this.add.existing(this.slider);
+
+      this.slider.onWeekChanged((week) => {
+        this.currentWeek = week;
+        this.events.emit('set-week', week);
+      });
+
+      this.events.on('set-week', (week: number) => {
+        this.slider.setWeek(week);
+      });
+
+      this.slider.setWeek(this.currentWeek);
+    }
   }
 
   private resetPlant() {
-    this.plant.destroy();
+    this.plant?.destroy();
     this.currentWeek = 0;
-    this.spawnPlant();
-    this.scene.get('MenuScene').events.emit('set-week', 0);
+    this.events.emit('set-week', 0);
   }
 }

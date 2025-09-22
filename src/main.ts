@@ -2,7 +2,6 @@ import Phaser from 'phaser'
 
 import Preloader from './scenes/Preloader'
 import PlantScene from './scenes/PlantScene'
-import MenuScene from './scenes/MenuScene'
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
@@ -18,7 +17,7 @@ const config: Phaser.Types.Core.GameConfig = {
 			gravity: { y: 200 }
 		}
 	},
-	scene:  [Preloader, PlantScene, MenuScene]
+	scene:  [Preloader, PlantScene]
 }
 
 export default new Phaser.Game(config)

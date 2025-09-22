@@ -9,11 +9,17 @@ export default class Preloader extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image(TextureKeys.Background, 'house/background.png');
-        this.load.image(TextureKeys.Table, 'assets/table.png');
-        this.load.image(TextureKeys.TimelineSlider, 'assets/timeline-slider1.png');
+        this.load.image(TextureKeys.Background, 'assets/background.png');
+        this.load.image(TextureKeys.TimelineSlider, 'assets/timeline-slider.png');
         this.load.image(TextureKeys.TimelineCoin, 'assets/timeline-coin.png');
-        this.load.image(TextureKeys.TimelineStrawberry, 'assets/strawberry.png');
+        this.load.image(TextureKeys.Table, 'assets/table.png');
+        this.load.image(TextureKeys.PlantPot, 'assets/plant-pot.png');
+
+        this.load.image(TextureKeys.MorningGloryLeaf, 'assets/morning-glory-leaf.png');
+        this.load.image(TextureKeys.LettuceLeaf, 'assets/lettuce-leaf.png');
+
+        this.load.image(TextureKeys.DefaultMorningGloryLeaf, 'assets/morning-glory-leaf.png');
+        this.load.image(TextureKeys.DefaultLettuceLeaf, 'assets/lettuce-leaf.png');
     }
 
     create() {

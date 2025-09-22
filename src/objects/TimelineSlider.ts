@@ -11,33 +11,27 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
   private currentWeek: number = 0
   private changeCallback?: (week: number) => void
 
-  constructor(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    barWidth = 400,
-    totalWeeks = 4
-  ) {
+  constructor(scene: Phaser.Scene, screenWidth: number, screenHeight: number, totalWeeks = 4) {
+    // Tính toán vị trí và kích thước
+    const barWidth = screenWidth / 4
+    const x = (screenWidth - barWidth) / 2
+    const y = screenHeight - 60
+
     super(scene, x, y)
 
     this.barWidth = barWidth
     this.totalWeeks = totalWeeks
 
     // Track (thanh nền)
-    this.track = scene.add
-      .image(0, 0, TextureKeys.TimelineSlider)
-      .setOrigin(0, 0.5)
-    this.track.setDisplaySize(barWidth, 40) // ép chiều dài đúng barWidth
+    this.track = scene.add.image(0, 0, TextureKeys.TimelineSlider).setOrigin(0, 0.5)
+    this.track.setDisplaySize(barWidth, 40) // ép thanh đúng 1/4 màn hình
     this.add(this.track)
 
     this.minX = 0
     this.maxX = this.barWidth
 
     // Handle (coin/dâu tây)
-    this.handle = scene.add
-      .image(0, 0, TextureKeys.TimelineCoin)
-      .setOrigin(0.5)
-      .setScale(0.6)
+    this.handle = scene.add.image(0, 0, TextureKeys.TimelineCoin).setOrigin(0.5).setScale(0.6)
     this.handle.setInteractive({ draggable: true })
     scene.input.setDraggable(this.handle)
     this.add(this.handle)
@@ -45,7 +39,7 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
     // === Drag logic ===
     scene.input.on('drag', (pointer, gameObject) => {
       if (gameObject === this.handle) {
-        const localX = pointer.worldX - this.x // convert global → local
+        const localX = pointer.worldX - this.x
         this.handle.x = Phaser.Math.Clamp(localX, this.minX, this.maxX)
       }
     })
@@ -55,7 +49,6 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
         const percent = (this.handle.x - this.minX) / this.barWidth
         const week = Math.round(percent * this.totalWeeks)
 
-        // Snap về vị trí tuần gần nhất
         this.setWeek(week)
 
         if (this.changeCallback) {
@@ -67,12 +60,10 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
     // Tick label
     for (let i = 0; i <= totalWeeks; i++) {
       const tickX = (i / totalWeeks) * barWidth
-      const tick = scene.add
-        .text(tickX, 30, `${i} week`, {
-          fontSize: '14px',
-          color: '#000',
-        })
-        .setOrigin(0.5)
+      const tick = scene.add.text(tickX, 30, `${i} week`, {
+        fontSize: '14px',
+        color: '#000',
+      }).setOrigin(0.5)
       this.add(tick)
     }
 

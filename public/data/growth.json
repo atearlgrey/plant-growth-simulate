@@ -1,5 +1,5 @@
 {
-  "plants": ["lettuce", "morning_glory"],
+  "plants": ["lettuce", "morning-glory"],
   "lightModes": ["sun", "led", "mixed"],
   "weeks": [
     {
@@ -9,10 +9,10 @@
         "led": { "leaves": 0, "height": 0, "image": "assets/lettuce/led/week0.png" },
         "mixed": { "leaves": 0, "height": 0, "image": "assets/lettuce/mixed/week0.png" }
       },
-      "morning_glory": {
-        "sun": { "leaves": 0, "height": 0, "image": "assets/morning_glory/sun/week0.png" },
-        "led": { "leaves": 0, "height": 0, "image": "assets/morning_glory/led/week0.png" },
-        "mixed": { "leaves": 0, "height": 0, "image": "assets/morning_glory/mixed/week0.png" }
+      "morning-glory": {
+        "sun": { "leaves": 0, "height": 0, "image": "assets/morning-glory/sun/week0.png" },
+        "led": { "leaves": 0, "height": 0, "image": "assets/morning-glory/led/week0.png" },
+        "mixed": { "leaves": 0, "height": 0, "image": "assets/morning-glory/mixed/week0.png" }
       }
     },
     {
@@ -22,10 +22,10 @@
         "led": { "leaves": 4, "height": 6, "image": "assets/lettuce/led/week1.png" },
         "mixed": { "leaves": 3, "height": 7, "image": "assets/lettuce/mixed/week1.png" }
       },
-      "morning_glory": {
-        "sun": { "leaves": 5, "height": 5, "image": "assets/morning_glory/sun/week1.png" },
-        "led": { "leaves": 4, "height": 6, "image": "assets/morning_glory/led/week1.png" },
-        "mixed": { "leaves": 3, "height": 7, "image": "assets/morning_glory/mixed/week1.png" }
+      "morning-glory": {
+        "sun": { "leaves": 5, "height": 5, "image": "assets/morning-glory/sun/week1.png" },
+        "led": { "leaves": 4, "height": 6, "image": "assets/morning-glory/led/week1.png" },
+        "mixed": { "leaves": 3, "height": 7, "image": "assets/morning-glory/mixed/week1.png" }
       }
     },
     {
@@ -35,10 +35,10 @@
         "led": { "leaves": 8, "height": 12, "image": "assets/lettuce/led/week2.png" },
         "mixed": { "leaves": 6, "height": 14, "image": "assets/lettuce/mixed/week2.png" }
       },
-      "morning_glory": {
-        "sun": { "leaves": 10, "height": 10, "image": "assets/morning_glory/sun/week2.png" },
-        "led": { "leaves": 8, "height": 12, "image": "assets/morning_glory/led/week2.png" },
-        "mixed": { "leaves": 6, "height": 14, "image": "assets/morning_glory/mixed/week2.png" }
+      "morning-glory": {
+        "sun": { "leaves": 10, "height": 10, "image": "assets/morning-glory/sun/week2.png" },
+        "led": { "leaves": 8, "height": 12, "image": "assets/morning-glory/led/week2.png" },
+        "mixed": { "leaves": 6, "height": 14, "image": "assets/morning-glory/mixed/week2.png" }
       }
     },
     {
@@ -48,10 +48,10 @@
         "led": { "leaves": 12, "height": 18, "image": "assets/lettuce/led/week3.png" },
         "mixed": { "leaves": 9, "height": 21, "image": "assets/lettuce/mixed/week3.png" }
       },
-      "morning_glory": {
-        "sun": { "leaves": 15, "height": 15, "image": "assets/morning_glory/sun/week3.png" },
-        "led": { "leaves": 12, "height": 18, "image": "assets/morning_glory/led/week3.png" },
-        "mixed": { "leaves": 9, "height": 21, "image": "assets/morning_glory/mixed/week3.png" }
+      "morning-glory": {
+        "sun": { "leaves": 15, "height": 15, "image": "assets/morning-glory/sun/week3.png" },
+        "led": { "leaves": 12, "height": 18, "image": "assets/morning-glory/led/week3.png" },
+        "mixed": { "leaves": 9, "height": 21, "image": "assets/morning-glory/mixed/week3.png" }
       }
     },
     {
@@ -61,10 +61,10 @@
         "led": { "leaves": 16, "height": 24, "image": "assets/lettuce/led/week4.png" },
         "mixed": { "leaves": 12, "height": 28, "image": "assets/lettuce/mixed/week4.png" }
       },
-      "morning_glory": {
-        "sun": { "leaves": 20, "height": 20, "image": "assets/morning_glory/sun/week4.png" },
-        "led": { "leaves": 16, "height": 24, "image": "assets/morning_glory/led/week4.png" },
-        "mixed": { "leaves": 12, "height": 28, "image": "assets/morning_glory/mixed/week4.png" }
+      "morning-glory": {
+        "sun": { "leaves": 20, "height": 20, "image": "assets/morning-glory/sun/week4.png" },
+        "led": { "leaves": 16, "height": 24, "image": "assets/morning-glory/led/week4.png" },
+        "mixed": { "leaves": 12, "height": 28, "image": "assets/morning-glory/mixed/week4.png" }
       }
     }
   ]

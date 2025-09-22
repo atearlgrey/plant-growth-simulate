@@ -41,7 +41,8 @@ export default class Plant extends Phaser.GameObjects.Image {
       weekData[this.plantType][this.lightMode] as PlantConfig;
 
     // Dynamic load ảnh từ public/
-    const key = `${this.plantType}_${this.lightMode}_week${week}`;
+    const key = `${this.plantType}-${this.lightMode}-week${week}`;
+    console.log('Loading texture key:', key, 'from', config.image);
     if (!this.scene.textures.exists(key)) {
       this.scene.load.image(key, config.image);
       this.scene.load.once('complete', () => {
@@ -53,7 +54,7 @@ export default class Plant extends Phaser.GameObjects.Image {
     }
 
     // (Optional) scale theo height
-    this.setScale(1 + config.height / 50);
+    this.setScale(0.05);
 
     // Bạn cũng có thể lưu leaves/height nếu cần
     console.log(
