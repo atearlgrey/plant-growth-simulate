@@ -38,7 +38,7 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.json('growthData', '/data/growth.json');
+    this.load.json('growthData', './data/growth.json');
   }
 
   create() {
