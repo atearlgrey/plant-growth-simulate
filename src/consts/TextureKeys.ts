@@ -1,5 +1,12 @@
 enum TextureKeys {
     Background = 'background',
+    BackgroundRoom = 'background-room',
+    BackgroundSun = 'background-sun',
+    BackgroundLed = 'background-led',
+    BackgroundMixed = 'background-mixed',
+
+    Window = 'window',
+    LampBulb = 'lamp-bulb',
 
     TimelineSlider = 'timeline-slider',
     TimelineCoin = 'timeline-coin',
