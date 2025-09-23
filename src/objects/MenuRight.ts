@@ -1,26 +1,42 @@
 import Phaser from 'phaser'
+
+import EventKeys from 'consts/EventKeys'
+
 import Panel from './Panel'
 import PlantMenu from './MenuPlant'
 import LightMenu from './MenuLight'
 
 export default class RightMenu extends Phaser.GameObjects.Container {
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  private plantMenu!: PlantMenu;
+  private lightMenu!: LightMenu;
+
+  constructor(scene: Phaser.Scene, x: number, y: number, defaultLightMode: string | undefined = undefined) {
     super(scene, x, y)
 
     // Panel nền
-    const bg = new Panel(scene, 0, 0, 200, 250, 15)
-    this.add(bg)
+    const bg = new Panel(scene, 0, 0, 200, 250, 15);
+    this.add(bg);
 
     // Menu plant
-    const plantMenu = new PlantMenu(scene, 10, 10)
-    this.add(plantMenu)
-    plantMenu.on('leaf-drag', (data) => this.emit('leaf-drag', data))
+    this.plantMenu = new PlantMenu(scene, 10, 10);
+    this.add(this.plantMenu);
+    this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data));
 
     // Menu light
-    const lightMenu = new LightMenu(scene, 10, 120)
-    this.add(lightMenu)
-    lightMenu.on('light', (mode) => this.emit('light', mode))
+    this.lightMenu = new LightMenu(scene, 10, 120, defaultLightMode);
+    this.add(this.lightMenu);
+    this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode));
 
-    scene.add.existing(this)
+    scene.add.existing(this);
+
+    // listen global enable/disable
+    scene.events.on(EventKeys.DisableItems, () => this.setEnabled(false))
+    scene.events.on(EventKeys.EnableItems, () => this.setEnabled(true))
+  }
+
+  /** Enable/disable cả PlantMenu và LightMenu */
+  public setEnabled(enabled: boolean) {
+    this.plantMenu.setEnabled(enabled);
+    this.lightMenu.setEnabled(enabled);
   }
 }

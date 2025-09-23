@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import SceneKeys from 'consts/SceneKeys';
+import EventKeys from 'consts/EventKeys';
 import TextureKeys from 'consts/TextureKeys';
+
 import LightType from 'consts/LightType';
 
 import Window from 'objects/Window';
@@ -12,6 +14,7 @@ import TimelineSlider from 'objects/TimelineSlider';
 import Table from 'objects/Table';
 import Pot from 'objects/PlantPot';
 import Plant from 'objects/Plant';
+import StateKeys from 'consts/AppStates';
 
 export default class PlantScene extends Phaser.Scene {
   private plant!: Plant;
@@ -50,9 +53,13 @@ export default class PlantScene extends Phaser.Scene {
     // load data cây
     this.growthData = this.cache.json.get('growthData');
 
+    // gắn toàn bộ event
+    this.eventHandlers();
+
     // === HANDLE RESIZE ===
     this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
       this.layoutScene(gameSize.width, gameSize.height);
+      this.updateLights();
     });
   }
 
@@ -95,87 +102,32 @@ export default class PlantScene extends Phaser.Scene {
 
     // Pot
     if (!this.pot) {
-      this.pot = new Pot(this, width / 2, (height / 2 + 190) - 35);
-
-      this.pot.on('plant-drop', (plantType: string) => {
-        console.log('Đã thả cây vào chậu:', plantType);
-
-        this.plant?.destroy(); // replace cây cũ
-
-        this.plant = new Plant(
-          this,
-          this.pot.x,
-          this.pot.y - this.pot.displayHeight / 4,
-          plantType,
-          this.lightMode,
-          this.growthData
-        );
-        this.plant.setWeek(this.currentWeek);
-      });
+      this.pot = new Pot(this, width / 2, height / 2 + 155); // chỉnh offset hợp lý
     } else {
-      this.pot.setPosition(width / 2, (height / 2 + 190) - 35);
+      this.pot.setPosition(width / 2, height / 2 + 155);
     }
 
     // Left menu
     if (!this.leftMenu) {
       this.leftMenu = new LeftPanel(this, 50, 100);
-      this.leftMenu.on('pause', () => this.scene.pause());
-      this.leftMenu.on('reset', () => this.resetPlant());
-      this.leftMenu.on('result', () => console.log('Hiện kết quả'));
-      this.leftMenu.on('conclusion', () => console.log('Hiện kết luận'));
     } else {
       this.leftMenu.setPosition(50, 100);
     }
 
     // Right menu
     if (!this.rightMenu) {
-      this.rightMenu = new RightPanel(this, width - 220, 50);
-
-      this.rightMenu.on('leaf-drag', ({ leaf, plantType }) => {
-        this.pot.checkDrop(leaf, plantType);
-      });
-
-      this.rightMenu.on('light', (mode: LightType) => {
-        console.log('Light mode:', mode);
-        this.lightMode = mode;
-        this.updateLights(); // cập nhật ánh sáng mỗi khi đổi light mode
-      });
+      this.rightMenu = new RightPanel(this, width - 220, 50, this.lightMode);
     } else {
       this.rightMenu.setPosition(width - 220, 50);
     }
 
     // Slider
     if (this.slider) {
-      const lastWeek = this.slider.getWeek();
-      this.slider.destroy();
-
-      this.slider = new TimelineSlider(this, width, height, this.slider['totalWeeks']);
-      this.add.existing(this.slider);
-
-      this.slider.onWeekChanged((week) => {
-        this.currentWeek = week;
-        this.events.emit('set-week', week);
-      });
-
-      this.events.on('set-week', (week: number) => {
-        this.slider.setWeek(week);
-      });
-
-      this.slider.setWeek(lastWeek);
+      this.slider.resize(width, height)
     } else {
-      this.slider = new TimelineSlider(this, width, height, 4);
-      this.add.existing(this.slider);
-
-      this.slider.onWeekChanged((week) => {
-        this.currentWeek = week;
-        this.events.emit('set-week', week);
-      });
-
-      this.events.on('set-week', (week: number) => {
-        this.slider.setWeek(week);
-      });
-
-      this.slider.setWeek(this.currentWeek);
+      this.slider = new TimelineSlider(this, width, height, 4)
+      this.add.existing(this.slider)
+      this.slider.setWeek(this.currentWeek)
     }
 
     // update lights sau khi layout
@@ -183,9 +135,9 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   private resetPlant() {
-    this.plant?.destroy();
     this.currentWeek = 0;
-    this.events.emit('set-week', 0);
+    this.events.emit(EventKeys.SetWeek, 0);
+    this.plant?.destroy();
   }
 
   /** Vẽ lại ánh sáng dựa trên lightMode hiện tại */
@@ -209,7 +161,6 @@ export default class PlantScene extends Phaser.Scene {
   /** Ánh sáng mặt trời từ cửa sổ xuống chậu */
   private drawSunLightFromWindow(window: Window, potX: number, potY: number) {
     const { bottomLeft, bottomRight, topRight } = window.getCorners();
-
     const g = this.add.graphics();
     g.fillStyle(0xffff99, 0.25);
 
@@ -254,5 +205,85 @@ export default class PlantScene extends Phaser.Scene {
     g.fillPath();
     g.setDepth(1);
     return g;
+  }
+
+  /** Gom toàn bộ event binding vào 1 chỗ */
+  private eventHandlers() {
+    // 🎯 Left menu events
+    this.leftMenu.on(EventKeys.Start, () => {
+      console.log('▶ Start');
+      this.events.emit(EventKeys.DisableItems);
+      this.leftMenu.setCurrentState(StateKeys.Running);
+    });
+
+    this.leftMenu.on(EventKeys.Resume, () => {
+      console.log('⏯ Resume');
+      this.events.emit(EventKeys.DisableItems);
+      this.leftMenu.setCurrentState(StateKeys.Running);
+    });
+
+    this.leftMenu.on(EventKeys.Stop, () => {
+      console.log('⏸ Stop');
+      this.events.emit(EventKeys.DisableItems);
+      this.leftMenu.setCurrentState(StateKeys.Paused);
+    });
+
+    this.leftMenu.on(EventKeys.Reset, () => {
+      console.log('🔄 Reset');
+      this.resetPlant();
+      this.events.emit(EventKeys.EnableItems);
+      this.leftMenu.setCurrentState(StateKeys.Initial);
+    });
+
+    this.leftMenu.on(EventKeys.Complete, () => {
+      console.log('✅ Compete');
+      this.events.emit(EventKeys.EnableItems);
+      this.leftMenu.setCurrentState(StateKeys.Complete);
+    });
+
+    this.leftMenu.on(EventKeys.Result, () => {
+      console.log('📊 Show results');
+    });
+
+    this.leftMenu.on(EventKeys.Conclusion, () => {
+      console.log('📘 Show conclusion');
+    });
+
+    // 🎯 Right menu events
+    this.rightMenu.on(EventKeys.LeafDrag, ({ leaf, plantType }) => {
+      this.pot.checkDrop(leaf, plantType);
+    });
+
+    this.pot.on(EventKeys.PlantDrop, (plantType: string) => {
+      this.plant?.destroy(); // replace cây cũ
+      this.plant = new Plant(
+        this,
+        this.pot.x,
+        this.pot.y - this.pot.displayHeight / 4,
+        plantType,
+        this.lightMode,
+        this.growthData
+      );
+      this.plant.setWeek(this.currentWeek);
+    });
+
+    this.rightMenu.on(EventKeys.LightChange, (mode: LightType) => {
+      console.log('💡 Light mode:', mode);
+      this.lightMode = mode;
+      this.updateLights();
+    });
+
+    // 🎯 Slider events
+    this.slider.onWeekChanged((week) => {
+      this.currentWeek = week;
+      this.events.emit(EventKeys.SetWeek, week);
+    });
+
+    this.events.on(EventKeys.SetWeek, (week: number) => {
+      this.slider.setWeek(week);
+      if (this.plant) {
+        this.plant.setWeek(week);
+      }
+    });
   }
 }

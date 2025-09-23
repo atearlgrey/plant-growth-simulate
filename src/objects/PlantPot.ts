@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import TextureKeys from 'consts/TextureKeys'
+import EventKeys from 'consts/EventKeys'
 
 export default class Pot extends Phaser.GameObjects.Image {
   private currentPlantType: string | null = null
@@ -30,7 +31,7 @@ export default class Pot extends Phaser.GameObjects.Image {
         // ease: 'Sine.easeOut',
         onComplete: () => {
           leaf.destroy()
-          this.emit('plant-drop', plantType)
+          this.emit(EventKeys.PlantDrop, plantType)
         }
       })
     } else {

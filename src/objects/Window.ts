@@ -6,7 +6,7 @@ export default class Window extends Phaser.GameObjects.Image {
     super(scene, x, y, TextureKeys.Window)
 
     this.setOrigin(0.5, 0.5)   // căn giữa
-    this.setScale(0.5)         // tuỳ chỉnh scale theo kích thước phòng
+    this.setScale(0.3)         // tuỳ chỉnh scale theo kích thước phòng
 
     scene.add.existing(this)
   }
@@ -69,5 +69,4 @@ export default class Window extends Phaser.GameObjects.Image {
       })
     })
   }
-
 }
