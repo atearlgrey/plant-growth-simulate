@@ -1,7 +1,8 @@
 {
 	"compilerOptions": {
-		"target": "es2016",
+		"target": "es2017",
 		"module": "es6",
+		"lib": ["es2017", "dom"],
 		"strict": true,
 		"noImplicitAny": false,
 		"noEmit": true,

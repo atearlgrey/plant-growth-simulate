@@ -1,32 +1,37 @@
 import Phaser from 'phaser'
-import TextureKeys from 'consts/TextureKeys'
-import PlantType from 'consts/PlantType'
+
 import { arrangeItems } from 'helpers/GraphicItemArrange'
 
+import EventKeys from 'consts/EventKeys'
+import TextureKeys from 'consts/TextureKeys'
+import PlantType from 'consts/PlantType'
+
 export default class PlantMenu extends Phaser.GameObjects.Container {
+  private leafIcons: Phaser.GameObjects.Image[] = [];
+
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
 
-    this.add(scene.add.text(0, 0, 'Chọn cây', { fontSize: '16px', color: '#fff' }))
+    this.add(scene.add.text(0, 0, 'Chọn cây', { fontSize: '16px', color: '#fff' }));
 
     const plants = [
       { key: TextureKeys.MorningGloryLeaf, type: PlantType.MorningGlory },
       { key: TextureKeys.LettuceLeaf, type: PlantType.Lettuce }
-    ]
+    ];
 
-    const leafIcons = plants.map((plant) => {
-      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.05).setInteractive()
+    this.leafIcons = plants.map((plant) => {
+      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.05).setInteractive();
       leaf.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-        this.startDragLeaf(plant.key, plant.type, pointer)
+        this.startDragLeaf(plant.key, plant.type, pointer);
       })
-      this.add(leaf)
-      return leaf
+      this.add(leaf);
+      return leaf;
     })
 
     // dùng helper để sắp xếp
-    arrangeItems(leafIcons, 100, 60, 70)
+    arrangeItems(this.leafIcons, 100, 60, 70);
 
-    scene.add.existing(this)
+    scene.add.existing(this);
   }
 
   private startDragLeaf(textureKey: string, plantType: string, pointer: Phaser.Input.Pointer) {
@@ -41,7 +46,20 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
 
     scene.input.once('pointerup', () => {
       scene.input.off('pointermove', moveHandler)
-      this.emit('leaf-drag', { leaf, plantType })
+      this.emit(EventKeys.LeafDrag, { leaf, plantType })
+    })
+  }
+
+  /** Enable/disable toàn bộ leaf icons */
+  public setEnabled(enabled: boolean) {
+    this.leafIcons.forEach(icon => {
+      if (enabled) {
+        icon.setInteractive()
+        icon.setAlpha(1)
+      } else {
+        icon.disableInteractive()
+        icon.setAlpha(0.5)
+      }
     })
   }
 }

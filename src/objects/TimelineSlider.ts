@@ -1,18 +1,19 @@
 import Phaser from 'phaser'
 import TextureKeys from 'consts/TextureKeys'
+import EventKeys from 'consts/EventKeys'
 
 export default class TimelineSlider extends Phaser.GameObjects.Container {
   private track: Phaser.GameObjects.Image
   private handle: Phaser.GameObjects.Image
-  private minX: number
-  private maxX: number
+  private ticks: Phaser.GameObjects.Text[] = []
+  private minX: number = 0
+  private maxX: number = 0
   private barWidth: number
   private totalWeeks: number
   private currentWeek: number = 0
   private changeCallback?: (week: number) => void
 
   constructor(scene: Phaser.Scene, screenWidth: number, screenHeight: number, totalWeeks = 4) {
-    // Tính toán vị trí và kích thước
     const barWidth = screenWidth / 4
     const x = (screenWidth - barWidth) / 2
     const y = screenHeight - 60
@@ -22,15 +23,15 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
     this.barWidth = barWidth
     this.totalWeeks = totalWeeks
 
-    // Track (thanh nền)
+    // Track
     this.track = scene.add.image(0, 0, TextureKeys.TimelineSlider).setOrigin(0, 0.5)
-    this.track.setDisplaySize(barWidth, 40) // ép thanh đúng 1/4 màn hình
+    this.track.setDisplaySize(this.barWidth, 40)
     this.add(this.track)
 
     this.minX = 0
     this.maxX = this.barWidth
 
-    // Handle (coin/dâu tây)
+    // Handle
     this.handle = scene.add.image(0, 0, TextureKeys.TimelineCoin).setOrigin(0.5).setScale(0.6)
     this.handle.setInteractive({ draggable: true })
     scene.input.setDraggable(this.handle)
@@ -48,7 +49,6 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
       if (gameObject === this.handle) {
         const percent = (this.handle.x - this.minX) / this.barWidth
         const week = Math.round(percent * this.totalWeeks)
-
         this.setWeek(week)
 
         if (this.changeCallback) {
@@ -57,21 +57,39 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
       }
     })
 
-    // Tick label
+    // === Tick labels (tạo 1 lần duy nhất) ===
     for (let i = 0; i <= totalWeeks; i++) {
-      const tickX = (i / totalWeeks) * barWidth
+      const tickX = (i / totalWeeks) * this.barWidth
       const tick = scene.add.text(tickX, 30, `${i} week`, {
         fontSize: '14px',
         color: '#000',
       }).setOrigin(0.5)
       this.add(tick)
+      this.ticks.push(tick)
     }
 
     scene.add.existing(this)
+
+    // listen global enable/disable
+    scene.events.on(EventKeys.DisableItems, () => this.setEnabled(false))
+    scene.events.on(EventKeys.EnableItems, () => this.setEnabled(true))
   }
 
-  /** Set tuần từ bên ngoài (sync với PlantScene) */
-  setWeek(week: number) {
+  /** Enable/disable toàn bộ slider */
+  public setEnabled(enabled: boolean) {
+    if (enabled) {
+      this.track.setAlpha(1)
+      this.handle.setInteractive()
+      this.handle.setAlpha(1)
+    } else {
+      this.track.setAlpha(0.5)
+      this.handle.disableInteractive()
+      this.handle.setAlpha(0.8)
+    }
+  }
+
+  /** Set tuần từ bên ngoài */
+  public setWeek(week: number) {
     const targetX = (week / this.totalWeeks) * this.barWidth
     this.scene.tweens.add({
       targets: this.handle,
@@ -83,11 +101,32 @@ export default class TimelineSlider extends Phaser.GameObjects.Container {
   }
 
   /** Đăng ký callback khi tuần thay đổi */
-  onWeekChanged(callback: (week: number) => void) {
+  public onWeekChanged(callback: (week: number) => void) {
     this.changeCallback = callback
   }
 
-  getWeek(): number {
+  /** Lấy tuần hiện tại */
+  public getWeek(): number {
     return this.currentWeek
+  }
+
+  /** Resize khi màn hình thay đổi */
+  public resize(screenWidth: number, screenHeight: number) {
+    this.barWidth = screenWidth / 4
+    this.x = (screenWidth - this.barWidth) / 2
+    this.y = screenHeight - 60
+
+    // resize track
+    this.track.setDisplaySize(this.barWidth, 40)
+    this.maxX = this.barWidth
+
+    // reposition ticks
+    this.ticks.forEach((tick, i) => {
+      const tickX = (i / this.totalWeeks) * this.barWidth
+      tick.setX(tickX)
+    })
+
+    // giữ handle ở đúng tuần
+    this.setWeek(this.currentWeek)
   }
 }
