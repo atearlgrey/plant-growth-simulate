@@ -2,51 +2,46 @@ import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
 import StateKeys from 'consts/AppStates'
 import AppStates from 'consts/AppStates'
+import TextureKeys from 'consts/TextureKeys'
 
 export default class LeftMenu extends Phaser.GameObjects.Container {
-  private mainButtonText!: Phaser.GameObjects.Text
-  private mainButtonCircle!: Phaser.GameObjects.Arc
-  private currentState: StateKeys = StateKeys.Initial;
+  private mainButton!: Phaser.GameObjects.Image
+  private resetButton!: Phaser.GameObjects.Image
+  private resultButton!: Phaser.GameObjects.Image
+  private conclusionButton!: Phaser.GameObjects.Image
 
-  private resetButton!: Phaser.GameObjects.Arc
-  private resultButton!: Phaser.GameObjects.Arc
-  private conclusionButton!: Phaser.GameObjects.Arc
-
-  private resetText!: Phaser.GameObjects.Text
-  private resultText!: Phaser.GameObjects.Text
-  private conclusionText!: Phaser.GameObjects.Text
+  private currentState: StateKeys = StateKeys.Initial
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
 
+    const btnSize = Math.min(this.scene.scale.width, this.scene.scale.height) * 0.07
+
+    console.log('LeftMenu init at', x, y, ' with button size:', btnSize, btnSize)
+
     // === Main Button (Start/Stop/Resume) ===
-    this.mainButtonCircle = this.scene.add.circle(0, 0, 25, 0x28a745).setInteractive()
-    this.mainButtonText = this.scene.add.text(0, 0, 'Start', { fontSize: '12px', color: '#fff' }).setOrigin(0.5)
-    this.add([this.mainButtonCircle, this.mainButtonText])
-    this.mainButtonCircle.on('pointerdown', () => this.handleMainButton())
+    this.mainButton = this.scene.add.image(0, 0, TextureKeys.ButtonStart).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.mainButton])
+    this.mainButton.on('pointerdown', () => this.handleMainButton())
 
     // === Reset ===
-    this.resetButton = this.scene.add.circle(0, 80, 25, 0x0077cc).setInteractive()
-    this.resetText = this.scene.add.text(0, 80, 'Reset', { fontSize: '12px', color: '#fff' }).setOrigin(0.5)
-    this.add([this.resetButton, this.resetText])
+    this.resetButton = this.scene.add.image(0, 80, TextureKeys.ButtonReset).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.resetButton])
     this.resetButton.on('pointerdown', () => this.emit(EventKeys.Reset))
 
     // === Result ===
-    this.resultButton = this.scene.add.circle(0, 160, 25, 0x0077cc).setInteractive()
-    this.resultText = this.scene.add.text(0, 160, 'Kết quả', { fontSize: '12px', color: '#fff' }).setOrigin(0.5)
-    this.add([this.resultButton, this.resultText])
+    this.resultButton = this.scene.add.image(0, 160, TextureKeys.ButtonResult).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.resultButton])
     this.resultButton.on('pointerdown', () => this.emit(EventKeys.Result))
 
     // === Conclusion ===
-    this.conclusionButton = this.scene.add.circle(0, 240, 25, 0x0077cc).setInteractive()
-    this.conclusionText = this.scene.add.text(0, 240, 'Kết luận', { fontSize: '12px', color: '#fff' }).setOrigin(0.5)
-    this.add([this.conclusionButton, this.conclusionText])
+    this.conclusionButton = this.scene.add.image(0, 240, TextureKeys.ButtonConclusion).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.conclusionButton])
     this.conclusionButton.on('pointerdown', () => this.emit(EventKeys.Conclusion))
 
-    // === Conclusion ===
-    const completeButton = this.scene.add.circle(0, 320, 25, 0x28a745).setInteractive()
-    const completeText = this.scene.add.text(0, 320, 'Complete', { fontSize: '12px', color: '#fff' }).setOrigin(0.5)
-    this.add([completeButton, completeText])
+    // === Complete ===
+    const completeButton = this.scene.add.image(0, 320, TextureKeys.ButtonComplete).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([completeButton])
     completeButton.on('pointerdown', () => this.emit(EventKeys.Complete))
 
     scene.add.existing(this)
@@ -72,12 +67,12 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     }
   }
 
-  /** Set state từ bên ngoài (ví dụ: hoàn thành thí nghiệm) */
+  /** Set state từ bên ngoài */
   public setCurrentState(newState: StateKeys) {
-    if (this.currentState === newState) return;
+    if (this.currentState === newState) return
     if (newState === AppStates.Complete && this.currentState !== AppStates.Running) {
       console.warn('Chỉ có thể chuyển sang Complete từ trạng thái Running')
-      return;
+      return
     }
     this.currentState = newState
     this.updateUI()
@@ -87,49 +82,43 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
   private updateUI() {
     switch (this.currentState) {
       case AppStates.Initial:
-        this.mainButtonText.setText('Start')
-        this.mainButtonCircle.setFillStyle(0x28a745) // xanh
-        this.enableButton(this.resetButton, this.resetText, true)
-        this.enableButton(this.resultButton, this.resultText, false)
-        this.enableButton(this.conclusionButton, this.conclusionText, false)
+        this.mainButton.setTexture(TextureKeys.ButtonStart)
+        this.enableButton(this.resetButton, true)
+        this.enableButton(this.resultButton, false)
+        this.enableButton(this.conclusionButton, false)
         break
 
       case AppStates.Running:
-        this.mainButtonText.setText('Stop')
-        this.mainButtonCircle.setFillStyle(0xdc3545) // đỏ
-        this.enableButton(this.resetButton, this.resetText, false)
-        this.enableButton(this.resultButton, this.resultText, false)
-        this.enableButton(this.conclusionButton, this.conclusionText, false)
+        this.mainButton.setTexture(TextureKeys.ButtonStop)
+        this.enableButton(this.resetButton, false)
+        this.enableButton(this.resultButton, false)
+        this.enableButton(this.conclusionButton, false)
         break
 
       case AppStates.Paused:
-        this.mainButtonText.setText('Resume')
-        this.mainButtonCircle.setFillStyle(0xffc107) // vàng
-        this.enableButton(this.resetButton, this.resetText, true)
-        this.enableButton(this.resultButton, this.resultText, false)
-        this.enableButton(this.conclusionButton, this.conclusionText, false)
+        this.mainButton.setTexture(TextureKeys.ButtonResume)
+        this.enableButton(this.resetButton, true)
+        this.enableButton(this.resultButton, false)
+        this.enableButton(this.conclusionButton, false)
         break
 
       case AppStates.Complete:
-        this.mainButtonText.setText('Start')
-        this.mainButtonCircle.setFillStyle(0x28a745) // xanh
-        this.enableButton(this.resetButton, this.resetText, true)
-        this.enableButton(this.resultButton, this.resultText, true)
-        this.enableButton(this.conclusionButton, this.conclusionText, true)
+        this.mainButton.setTexture(TextureKeys.ButtonStart)
+        this.enableButton(this.resetButton, true)
+        this.enableButton(this.resultButton, true)
+        this.enableButton(this.conclusionButton, true)
         break
     }
   }
 
   /** Enable/disable circle button */
-  private enableButton(circle: Phaser.GameObjects.Arc, text: Phaser.GameObjects.Text, enabled: boolean) {
+  private enableButton(circle: Phaser.GameObjects.Image, enabled: boolean) {
     if (enabled) {
       circle.setInteractive()
       circle.setAlpha(1)
-      text.setAlpha(1)
     } else {
       circle.disableInteractive()
       circle.setAlpha(0.5)
-      text.setAlpha(0.5)
     }
   }
 }

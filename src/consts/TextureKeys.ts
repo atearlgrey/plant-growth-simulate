@@ -5,6 +5,14 @@ enum TextureKeys {
     BackgroundLed = 'background-led',
     BackgroundMixed = 'background-mixed',
 
+    ButtonStart = 'button-start',
+    ButtonStop = 'button-stop',
+    ButtonResume = 'button-resume',
+    ButtonReset = 'button-reset',
+    ButtonResult = 'button-result',
+    ButtonConclusion = 'button-conclusion',
+    ButtonComplete = 'button-complete',
+
     Window = 'window',
     LampBulb = 'lamp-bulb',
 
