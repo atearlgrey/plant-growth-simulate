@@ -54,7 +54,7 @@ export default class Plant extends Phaser.GameObjects.Image {
     }
 
     // (Optional) scale theo height
-    this.setScale(0.05);
+    this.setScale(0.1);
 
     // Bạn cũng có thể lưu leaves/height nếu cần
     console.log(

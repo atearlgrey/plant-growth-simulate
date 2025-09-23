@@ -15,7 +15,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
 
-    const btnSize = Math.min(this.scene.scale.width, this.scene.scale.height) * 0.07
+    const btnSize = Math.min(this.scene.scale.width, this.scene.scale.height) * 0.1
 
     console.log('LeftMenu init at', x, y, ' with button size:', btnSize, btnSize)
 
@@ -25,22 +25,22 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     this.mainButton.on('pointerdown', () => this.handleMainButton())
 
     // === Reset ===
-    this.resetButton = this.scene.add.image(0, 80, TextureKeys.ButtonReset).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.resetButton = this.scene.add.image(0, 100, TextureKeys.ButtonReset).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.resetButton])
     this.resetButton.on('pointerdown', () => this.emit(EventKeys.Reset))
 
     // === Result ===
-    this.resultButton = this.scene.add.image(0, 160, TextureKeys.ButtonResult).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.resultButton = this.scene.add.image(0, 200, TextureKeys.ButtonResult).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.resultButton])
     this.resultButton.on('pointerdown', () => this.emit(EventKeys.Result))
 
     // === Conclusion ===
-    this.conclusionButton = this.scene.add.image(0, 240, TextureKeys.ButtonConclusion).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.conclusionButton = this.scene.add.image(0, 300, TextureKeys.ButtonConclusion).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.conclusionButton])
     this.conclusionButton.on('pointerdown', () => this.emit(EventKeys.Conclusion))
 
     // === Complete ===
-    const completeButton = this.scene.add.image(0, 320, TextureKeys.ButtonComplete).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    const completeButton = this.scene.add.image(0, 400, TextureKeys.ButtonComplete).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([completeButton])
     completeButton.on('pointerdown', () => this.emit(EventKeys.Complete))
 

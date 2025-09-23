@@ -8,7 +8,7 @@ export default class Pot extends Phaser.GameObjects.Image {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, TextureKeys.PlantPot)
 
-    this.setOrigin(0.5).setScale(0.14).setName(TextureKeys.PlantPot)
+    this.setOrigin(0.5).setScale(0.3).setName(TextureKeys.PlantPot)
     scene.add.existing(this)
   }
 

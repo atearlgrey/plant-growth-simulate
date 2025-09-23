@@ -6,7 +6,7 @@ export default class Table extends Phaser.GameObjects.Image {
     super(scene, x, y, TextureKeys.Table)
 
     this.setOrigin(0.5)
-    this.setScale(0.4)
+    this.setScale(0.8)
     this.setName(TextureKeys.Table)
 
     scene.add.existing(this)

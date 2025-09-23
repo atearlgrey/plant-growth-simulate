@@ -96,28 +96,28 @@ export default class PlantScene extends Phaser.Scene {
 
     // Lamp
     if (!this.lamp) {
-      this.lamp = new Lamp(this, width / 2, 100);
+      this.lamp = new Lamp(this, width / 2, 20);
     } else {
-      this.lamp.setPosition(width / 2, 100);
+      this.lamp.setPosition(width / 2, 20);
     }
 
     // Table
     if (!this.table) {
-      this.table = new Table(this, width / 2, height / 2 + 260);
+      this.table = new Table(this, width / 2, height / 2 + 200);
     } else {
-      this.table.setPosition(width / 2, height / 2 + 260);
+      this.table.setPosition(width / 2, height / 2 + 200);
     }
 
     // Pot
     if (!this.pot) {
-      this.pot = new Pot(this, width / 2, height / 2 + 155); // chỉnh offset hợp lý
+      this.pot = new Pot(this, width / 2, height / 2 ); // chỉnh offset hợp lý
     } else {
-      this.pot.setPosition(width / 2, height / 2 + 155);
+      this.pot.setPosition(width / 2, height / 2 );
     }
 
     // Left menu
     if (!this.leftMenu) {
-      this.leftMenu = new LeftPanel(this, 50, 100);
+      this.leftMenu = new LeftPanel(this, 100, 100);
     } else {
       this.leftMenu.setPosition(50, 100);
     }
