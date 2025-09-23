@@ -4,33 +4,11 @@
   <meta charset="UTF-8" />
   <title>plant-growth</title>
   <style>
-    body { font-family: sans-serif; display: flex; }
-    #controls { margin-left: 20px; width: 220px; }
-    label { display: block; margin: 10px 0; }
-    input[type=number] { width: 70px; margin-left: 5px; }
-    input[type=range] { width: 100%; }
-    button { margin: 5px 0; width: 100%; padding: 5px; }
-
-	.button-row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-
-    .round-btn {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: none;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .round-btn:hover {
-      background-color: #45a049;
+    body { font-family: sans-serif; display: flex; height: 100%; width: 100%; margin: 0; padding: auto; overflow: hidden;}
+    canvas {
+      display: block;
+      touch-action: none;
+      -ms-touch-action: none;
     }
   </style>
 </head>

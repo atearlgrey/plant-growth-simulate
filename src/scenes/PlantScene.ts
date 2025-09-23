@@ -46,6 +46,8 @@ export default class PlantScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+    this.input.dragDistanceThreshold = 0;
+    this.input.dragTimeThreshold = 0;
 
     // init UI + layout
     this.layoutScene(width, height);
