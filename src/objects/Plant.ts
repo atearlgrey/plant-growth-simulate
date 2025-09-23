@@ -28,7 +28,7 @@ export default class Plant extends Phaser.GameObjects.Image {
     this.growthData = growthData;
 
     scene.add.existing(this);
-    this.setOrigin(0.5);
+    this.setOrigin(0.5, 1);              // gốc cây ở đáy
     this.setInteractive({ draggable: true });
   }
 
@@ -68,7 +68,7 @@ export default class Plant extends Phaser.GameObjects.Image {
 
     // Lưu thông tin lá và chiều cao
     console.log(
-      `${this.plantType} (${this.lightMode}) - Week ${week}: ${config.leaves} leaves, ${config.height}cm (${config.heightPx}px)`
+      `${this.plantType} (${this.lightMode}) - Week ${week}: ${config.leaves} leaves, ${config.height}cm (${config.heightPx}px), ${config.width}cm (${config.widthPx}px)`
     );
   }
 }
