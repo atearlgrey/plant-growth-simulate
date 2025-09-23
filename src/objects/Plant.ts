@@ -3,6 +3,9 @@ import Phaser from 'phaser';
 interface PlantConfig {
   leaves: number;
   height: number;
+  width: number;
+  heightPx: number;
+  widthPx: number;
   image: string;
 }
 
@@ -25,7 +28,7 @@ export default class Plant extends Phaser.GameObjects.Image {
     this.growthData = growthData;
 
     scene.add.existing(this);
-    this.setOrigin(0.5);
+    this.setOrigin(0.5, 1);              // gốc cây ở đáy
     this.setInteractive({ draggable: true });
   }
 
@@ -43,22 +46,29 @@ export default class Plant extends Phaser.GameObjects.Image {
     // Dynamic load ảnh từ public/
     const key = `${this.plantType}-${this.lightMode}-week${week}`;
     console.log('Loading texture key:', key, 'from', config.image);
+
+    const applyTexture = () => {
+      this.setTexture(key);
+
+      // ⚡ Set đúng width / height theo px từ JSON
+      if (config.widthPx && config.heightPx) {
+        this.setDisplaySize(config.widthPx, config.heightPx);
+      }
+    };
+
     if (!this.scene.textures.exists(key)) {
       this.scene.load.image(key, config.image);
       this.scene.load.once('complete', () => {
-        this.setTexture(key);
+        applyTexture();
       });
       this.scene.load.start();
     } else {
-      this.setTexture(key);
+      applyTexture();
     }
 
-    // (Optional) scale theo height
-    this.setScale(0.1);
-
-    // Bạn cũng có thể lưu leaves/height nếu cần
+    // Lưu thông tin lá và chiều cao
     console.log(
-      `${this.plantType} (${this.lightMode}) - Week ${week}: ${config.leaves} leaves, ${config.height}cm`
+      `${this.plantType} (${this.lightMode}) - Week ${week}: ${config.leaves} leaves, ${config.height}cm (${config.heightPx}px), ${config.width}cm (${config.widthPx}px)`
     );
   }
 }
