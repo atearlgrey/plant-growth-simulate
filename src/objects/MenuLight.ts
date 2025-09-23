@@ -2,40 +2,53 @@ import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
 import FontKeys from 'consts/FontKeys'
 
+interface RadioButton {
+  g: Phaser.GameObjects.Graphics
+  value: string
+}
+
 export default class LightMenu extends Phaser.GameObjects.Container {
-  private lightButtons: { [key: string]: Phaser.GameObjects.Graphics } = {}
+  private lightButtons: { [label: string]: RadioButton } = {}
   private currentMode: string | undefined
 
   constructor(scene: Phaser.Scene, x: number, y: number, defaultMode: string | undefined = undefined) {
     super(scene, x, y)
 
-    this.add(scene.add.text(0, 0, 'Ánh sáng', { fontSize: '20px', color: '#fff', fontStyle: FontKeys.BoldType, fontFamily: FontKeys.TahomaFamily }))
+    this.add(
+      scene.add.text(0, 0, 'Ánh sáng', {
+        fontSize: '20px',
+        color: '#fff',
+        fontStyle: FontKeys.BoldType,
+        fontFamily: FontKeys.TahomaFamily,
+      })
+    )
 
-    this.createRadioButton(0, 35, 'Tự nhiên')
-    this.createRadioButton(0, 65, 'Đèn led')
-    this.createRadioButton(0, 95, 'Hỗn hợp')
+    // label (hiển thị), value (logic)
+    this.createRadioButton(0, 35, 'Tự nhiên', 'sun')
+    this.createRadioButton(0, 65, 'Đèn LED', 'led')
+    this.createRadioButton(0, 95, 'Hỗn hợp', 'mixed')
 
     scene.add.existing(this)
 
     // chọn mặc định khi load
     this.selectLight(defaultMode)
 
-    // Chọn màu và độ dày của nét vẽ
-    const graphics2 = this.scene.add.graphics();
-    graphics2.lineStyle(4, 0x0639c4ff, 1); // (độ dày, màu, alpha)
-    graphics2.beginPath();
-    graphics2.moveTo(1625, y + 35);
-    graphics2.lineTo(1905, y + 35);  // điểm kết thúc (x2, y2)
-    graphics2.strokePath();      // vẽ đường
+    // đường kẻ trang trí
+    const graphics2 = this.scene.add.graphics()
+    graphics2.lineStyle(4, 0x0639c4ff, 1)
+    graphics2.beginPath()
+    graphics2.moveTo(1625, y + 35)
+    graphics2.lineTo(1905, y + 35)
+    graphics2.strokePath()
 
-    graphics2.lineStyle(4, 0x0639c4ff, 1); // (độ dày, màu, alpha)
-    graphics2.beginPath();
-    graphics2.moveTo(1625, y + 180);
-    graphics2.lineTo(1905, y + 180);  // điểm kết thúc (x2, y2)
-    graphics2.strokePath();      // vẽ đường
+    graphics2.lineStyle(4, 0x0639c4ff, 1)
+    graphics2.beginPath()
+    graphics2.moveTo(1625, y + 180)
+    graphics2.lineTo(1905, y + 180)
+    graphics2.strokePath()
   }
 
-  private createRadioButton(x: number, y: number, label: string) {
+  private createRadioButton(x: number, y: number, label: string, value: string) {
     const g = this.scene.add.graphics()
     g.setInteractive(new Phaser.Geom.Rectangle(x, y, 15, 15), Phaser.Geom.Rectangle.Contains)
 
@@ -45,25 +58,24 @@ export default class LightMenu extends Phaser.GameObjects.Container {
 
     const text = this.scene.add.text(x + 30, y + 6, label, {
       fontSize: '14px',
-      color: '#fff', 
-      fontFamily: FontKeys.TahomaFamily
+      color: '#fff',
+      fontFamily: FontKeys.TahomaFamily,
     }).setOrigin(0, 0.5)
 
     this.add([g, text])
-    this.lightButtons[label] = g
+    this.lightButtons[label] = { g, value }
 
     g.on('pointerdown', () => {
-      this.selectLight(label)
+      this.selectLight(value)
     })
   }
 
   private selectLight(mode: string | undefined) {
     this.currentMode = mode
 
-    Object.keys(this.lightButtons).forEach((key) => {
-      const g = this.lightButtons[key]
+    Object.values(this.lightButtons).forEach(({ g, value }) => {
       g.clear()
-      g.fillStyle(key === mode ? 0xffcc00 : 0x0077cc, 1)
+      g.fillStyle(value === mode ? 0xffcc00 : 0x0077cc, 1)
       g.fillRoundedRect(g.input?.hitArea.x ?? 0, g.input?.hitArea.y ?? 0, 15, 15, 8)
     })
 
@@ -81,16 +93,14 @@ export default class LightMenu extends Phaser.GameObjects.Container {
   }
 
   public setEnabled(enabled: boolean) {
-    Object.keys(this.lightButtons).forEach(key => {
-      const btn = this.lightButtons[key]
+    Object.values(this.lightButtons).forEach(({ g }) => {
       if (enabled) {
-        btn.setInteractive()
-        btn.setAlpha(1)
+        g.setInteractive()
+        g.setAlpha(1)
       } else {
-        btn.disableInteractive()
-        btn.setAlpha(0.5)
+        g.disableInteractive()
+        g.setAlpha(0.5)
       }
     })
   }
 }
-
