@@ -5,6 +5,7 @@ import { arrangeItems } from 'helpers/GraphicItemArrange'
 import EventKeys from 'consts/EventKeys'
 import TextureKeys from 'consts/TextureKeys'
 import PlantType from 'consts/PlantType'
+import FontKeys from 'consts/FontKeys'
 
 export default class PlantMenu extends Phaser.GameObjects.Container {
   private leafIcons: Phaser.GameObjects.Image[] = [];
@@ -12,7 +13,9 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
 
-    this.add(scene.add.text(0, 0, 'Chọn cây', { fontSize: '16px', color: '#fff' }));
+    this.add(scene.add.text(0, 0, 'Chọn cây', { fontSize: '20px', color: '#fff', fontStyle: FontKeys.BoldType, fontFamily: FontKeys.TahomaFamily }));
+    this.add(scene.add.text(0, 85, 'Rau muống', { fontSize: '14px', color: '#fff', fontFamily: FontKeys.TahomaFamily }));
+    this.add(scene.add.text(90, 85, 'Rau cải', { fontSize: '14px', color: '#fff', fontFamily: FontKeys.TahomaFamily }));
 
     const plants = [
       { key: TextureKeys.MorningGloryLeaf, type: PlantType.MorningGlory },
@@ -29,7 +32,7 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
     })
 
     // dùng helper để sắp xếp
-    arrangeItems(this.leafIcons, 100, 60, 70);
+    arrangeItems(this.leafIcons, 70, 60, 70);
 
     scene.add.existing(this);
   }
