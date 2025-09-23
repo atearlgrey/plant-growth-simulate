@@ -110,9 +110,9 @@ export default class PlantScene extends Phaser.Scene {
 
     // Pot
     if (!this.pot) {
-      this.pot = new Pot(this, width / 2, height / 2 ); // chỉnh offset hợp lý
+      this.pot = new Pot(this, width / 2, height / 2); // chỉnh offset hợp lý
     } else {
-      this.pot.setPosition(width / 2, height / 2 );
+      this.pot.setPosition(width / 2, height / 2);
     }
 
     // Left menu
@@ -268,10 +268,12 @@ export default class PlantScene extends Phaser.Scene {
 
     this.pot.on(EventKeys.PlantDrop, (plantType: string) => {
       this.plant?.destroy(); // replace cây cũ
+
+      const soilPos = this.pot.getSoilPosition(0.5);
       this.plant = new Plant(
         this,
-        this.pot.x,
-        this.pot.y - this.pot.displayHeight / 4,
+        soilPos.x,
+        soilPos.y,
         plantType,
         this.lightMode,
         this.growthData
@@ -308,11 +310,11 @@ export default class PlantScene extends Phaser.Scene {
 
     this.timer.callback = () => {
       if (this.currentWeek < this.maxWeek - 1) {
-        this.currentWeek ++;
+        this.currentWeek++;
         this.events.emit(EventKeys.SetWeek, this.currentWeek);
-      } 
+      }
       else if (this.currentWeek = this.maxWeek - 1) {
-        this.currentWeek ++;
+        this.currentWeek++;
         this.events.emit(EventKeys.SetWeek, this.currentWeek);
         this.leftMenu.emit(EventKeys.Complete);
         this.timer.paused = true;

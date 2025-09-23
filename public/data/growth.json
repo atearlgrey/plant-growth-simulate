@@ -5,66 +5,66 @@
     {
       "week": 0,
       "lettuce": {
-        "sun": { "leaves": 0, "height": 0, "image": "assets/lettuce/sun/week0.png" },
-        "led": { "leaves": 0, "height": 0, "image": "assets/lettuce/led/week0.png" },
-        "mixed": { "leaves": 0, "height": 0, "image": "assets/lettuce/mixed/week0.png" }
+        "sun":   { "leaves": 0, "height": 0, "width": 0, "heightPx": 50,  "widthPx": 20,  "image": "assets/lettuce/sun/week0.png" },
+        "led":   { "leaves": 0, "height": 0, "width": 0, "heightPx": 0,  "widthPx": 0,  "image": "assets/lettuce/led/week0.png" },
+        "mixed": { "leaves": 0, "height": 0, "width": 0, "heightPx": 0,  "widthPx": 0,  "image": "assets/lettuce/mixed/week0.png" }
       },
       "morning-glory": {
-        "sun": { "leaves": 0, "height": 0, "image": "assets/morning-glory/sun/week0.png" },
-        "led": { "leaves": 0, "height": 0, "image": "assets/morning-glory/led/week0.png" },
-        "mixed": { "leaves": 0, "height": 0, "image": "assets/morning-glory/mixed/week0.png" }
+        "sun":   { "leaves": 0, "height": 0, "width": 0, "heightPx": 0,  "widthPx": 0,  "image": "assets/morning-glory/sun/week0.png" },
+        "led":   { "leaves": 0, "height": 0, "width": 0, "heightPx": 0,  "widthPx": 0,  "image": "assets/morning-glory/led/week0.png" },
+        "mixed": { "leaves": 0, "height": 0, "width": 0, "heightPx": 0,  "widthPx": 0,  "image": "assets/morning-glory/mixed/week0.png" }
       }
     },
     {
       "week": 1,
       "lettuce": {
-        "sun": { "leaves": 5, "height": 5, "image": "assets/lettuce/sun/week1.png" },
-        "led": { "leaves": 4, "height": 6, "image": "assets/lettuce/led/week1.png" },
-        "mixed": { "leaves": 3, "height": 7, "image": "assets/lettuce/mixed/week1.png" }
+        "sun":   { "leaves": 5, "height": 5, "width": 2, "heightPx": 100, "widthPx": 40,  "image": "assets/lettuce/sun/week1.png" },
+        "led":   { "leaves": 4, "height": 6, "width": 2, "heightPx": 120, "widthPx": 48,  "image": "assets/lettuce/led/week1.png" },
+        "mixed": { "leaves": 3, "height": 7, "width": 3, "heightPx": 140, "widthPx": 56,  "image": "assets/lettuce/mixed/week1.png" }
       },
       "morning-glory": {
-        "sun": { "leaves": 5, "height": 5, "image": "assets/morning-glory/sun/week1.png" },
-        "led": { "leaves": 4, "height": 6, "image": "assets/morning-glory/led/week1.png" },
-        "mixed": { "leaves": 3, "height": 7, "image": "assets/morning-glory/mixed/week1.png" }
+        "sun":   { "leaves": 5, "height": 5, "width": 2, "heightPx": 100, "widthPx": 40,  "image": "assets/morning-glory/sun/week1.png" },
+        "led":   { "leaves": 4, "height": 6, "width": 2, "heightPx": 120, "widthPx": 48,  "image": "assets/morning-glory/led/week1.png" },
+        "mixed": { "leaves": 3, "height": 7, "width": 3, "heightPx": 140, "widthPx": 56,  "image": "assets/morning-glory/mixed/week1.png" }
       }
     },
     {
       "week": 2,
       "lettuce": {
-        "sun": { "leaves": 10, "height": 10, "image": "assets/lettuce/sun/week2.png" },
-        "led": { "leaves": 8, "height": 12, "image": "assets/lettuce/led/week2.png" },
-        "mixed": { "leaves": 6, "height": 14, "image": "assets/lettuce/mixed/week2.png" }
+        "sun":   { "leaves": 10, "height": 10, "width": 4, "heightPx": 200, "widthPx": 80,  "image": "assets/lettuce/sun/week2.png" },
+        "led":   { "leaves": 8,  "height": 12, "width": 5, "heightPx": 240, "widthPx": 96,  "image": "assets/lettuce/led/week2.png" },
+        "mixed": { "leaves": 6,  "height": 14, "width": 6, "heightPx": 280, "widthPx": 112, "image": "assets/lettuce/mixed/week2.png" }
       },
       "morning-glory": {
-        "sun": { "leaves": 10, "height": 10, "image": "assets/morning-glory/sun/week2.png" },
-        "led": { "leaves": 8, "height": 12, "image": "assets/morning-glory/led/week2.png" },
-        "mixed": { "leaves": 6, "height": 14, "image": "assets/morning-glory/mixed/week2.png" }
+        "sun":   { "leaves": 10, "height": 10, "width": 4, "heightPx": 200, "widthPx": 80,  "image": "assets/morning-glory/sun/week2.png" },
+        "led":   { "leaves": 8,  "height": 12, "width": 5, "heightPx": 240, "widthPx": 96,  "image": "assets/morning-glory/led/week2.png" },
+        "mixed": { "leaves": 6,  "height": 14, "width": 6, "heightPx": 280, "widthPx": 112, "image": "assets/morning-glory/mixed/week2.png" }
       }
     },
     {
       "week": 3,
       "lettuce": {
-        "sun": { "leaves": 15, "height": 15, "image": "assets/lettuce/sun/week3.png" },
-        "led": { "leaves": 12, "height": 18, "image": "assets/lettuce/led/week3.png" },
-        "mixed": { "leaves": 9, "height": 21, "image": "assets/lettuce/mixed/week3.png" }
+        "sun":   { "leaves": 15, "height": 15, "width": 6, "heightPx": 300, "widthPx": 120, "image": "assets/lettuce/sun/week3.png" },
+        "led":   { "leaves": 12, "height": 18, "width": 7, "heightPx": 360, "widthPx": 144, "image": "assets/lettuce/led/week3.png" },
+        "mixed": { "leaves": 9,  "height": 21, "width": 8, "heightPx": 420, "widthPx": 168, "image": "assets/lettuce/mixed/week3.png" }
       },
       "morning-glory": {
-        "sun": { "leaves": 15, "height": 15, "image": "assets/morning-glory/sun/week3.png" },
-        "led": { "leaves": 12, "height": 18, "image": "assets/morning-glory/led/week3.png" },
-        "mixed": { "leaves": 9, "height": 21, "image": "assets/morning-glory/mixed/week3.png" }
+        "sun":   { "leaves": 15, "height": 15, "width": 6, "heightPx": 300, "widthPx": 120, "image": "assets/morning-glory/sun/week3.png" },
+        "led":   { "leaves": 12, "height": 18, "width": 7, "heightPx": 360, "widthPx": 144, "image": "assets/morning-glory/led/week3.png" },
+        "mixed": { "leaves": 9,  "height": 21, "width": 8, "heightPx": 420, "widthPx": 168, "image": "assets/morning-glory/mixed/week3.png" }
       }
     },
     {
       "week": 4,
       "lettuce": {
-        "sun": { "leaves": 20, "height": 20, "image": "assets/lettuce/sun/week4.png" },
-        "led": { "leaves": 16, "height": 24, "image": "assets/lettuce/led/week4.png" },
-        "mixed": { "leaves": 12, "height": 28, "image": "assets/lettuce/mixed/week4.png" }
+        "sun":   { "leaves": 20, "height": 20, "width": 8,  "heightPx": 400, "widthPx": 160, "image": "assets/lettuce/sun/week4.png" },
+        "led":   { "leaves": 16, "height": 24, "width": 10, "heightPx": 480, "widthPx": 192, "image": "assets/lettuce/led/week4.png" },
+        "mixed": { "leaves": 12, "height": 28, "width": 11, "heightPx": 560, "widthPx": 224, "image": "assets/lettuce/mixed/week4.png" }
       },
       "morning-glory": {
-        "sun": { "leaves": 20, "height": 20, "image": "assets/morning-glory/sun/week4.png" },
-        "led": { "leaves": 16, "height": 24, "image": "assets/morning-glory/led/week4.png" },
-        "mixed": { "leaves": 12, "height": 28, "image": "assets/morning-glory/mixed/week4.png" }
+        "sun":   { "leaves": 20, "height": 20, "width": 8,  "heightPx": 400, "widthPx": 160, "image": "assets/morning-glory/sun/week4.png" },
+        "led":   { "leaves": 16, "height": 24, "width": 10, "heightPx": 480, "widthPx": 192, "image": "assets/morning-glory/led/week4.png" },
+        "mixed": { "leaves": 12, "height": 28, "width": 11, "heightPx": 560, "widthPx": 224, "image": "assets/morning-glory/mixed/week4.png" }
       }
     }
   ]
