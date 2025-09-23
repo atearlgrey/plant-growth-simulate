@@ -36,18 +36,20 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
 
   private startDragLeaf(textureKey: string, plantType: string, pointer: Phaser.Input.Pointer) {
     const scene = this.scene
-    const leaf = scene.add.image(pointer.x, pointer.y, textureKey).setOrigin(0.5).setScale(0.05)
-    leaf.setDepth(1000)
+    const leaf = scene.add.image(pointer.x, pointer.y, textureKey).setOrigin(0.5).setScale(0.05).setDepth(1000);
 
     const moveHandler = (p: Phaser.Input.Pointer) => {
       leaf.setPosition(p.x, p.y)
     }
     scene.input.on('pointermove', moveHandler)
 
-    scene.input.once('pointerup', () => {
-      scene.input.off('pointermove', moveHandler)
-      this.emit(EventKeys.LeafDrag, { leaf, plantType })
-    })
+    // khi nhả chuột ra
+    const upHandler = () => {
+      scene.input.off('pointermove', moveHandler);
+      scene.input.off('pointerup', upHandler);
+      this.emit(EventKeys.LeafDrag, { leaf, plantType });
+    };
+    scene.input.once('pointerup', upHandler);
   }
 
   /** Enable/disable toàn bộ leaf icons */
