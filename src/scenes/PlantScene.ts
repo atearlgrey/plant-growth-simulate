@@ -21,6 +21,7 @@ export default class PlantScene extends Phaser.Scene {
   private slider!: TimelineSlider;
   private growthData: any;
   private currentWeek: number = 0;
+  private maxWeek: number = 4;
   private plantType: string = 'lettuce';
   private lightMode: LightType = LightType.Sun;
 
@@ -30,6 +31,8 @@ export default class PlantScene extends Phaser.Scene {
 
   private sunLight?: Phaser.GameObjects.Graphics;
   private ledLight?: Phaser.GameObjects.Graphics;
+
+  private timer!: Phaser.Time.TimerEvent;
 
   private leftMenu!: LeftPanel;
   private rightMenu!: RightPanel;
@@ -57,6 +60,9 @@ export default class PlantScene extends Phaser.Scene {
 
     // gắn toàn bộ event
     this.eventHandlers();
+
+    // setting timer
+    this.settingTimer();
 
     // === HANDLE RESIZE ===
     this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
@@ -216,18 +222,21 @@ export default class PlantScene extends Phaser.Scene {
       console.log('▶ Start');
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
+      this.timer.paused = false;
     });
 
     this.leftMenu.on(EventKeys.Resume, () => {
       console.log('⏯ Resume');
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
+      this.timer.paused = false;
     });
 
     this.leftMenu.on(EventKeys.Stop, () => {
       console.log('⏸ Stop');
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Paused);
+      this.timer.paused = true;
     });
 
     this.leftMenu.on(EventKeys.Reset, () => {
@@ -235,6 +244,7 @@ export default class PlantScene extends Phaser.Scene {
       this.resetPlant();
       this.events.emit(EventKeys.EnableItems);
       this.leftMenu.setCurrentState(StateKeys.Initial);
+      this.timer.paused = true;
     });
 
     this.leftMenu.on(EventKeys.Complete, () => {
@@ -287,5 +297,29 @@ export default class PlantScene extends Phaser.Scene {
         this.plant.setWeek(week);
       }
     });
+  }
+
+  private settingTimer() {
+    this.timer = this.time.addEvent({
+      delay: 2000,
+      loop: true,
+      paused: true
+    });
+
+    this.timer.callback = () => {
+      if (this.currentWeek < this.maxWeek - 1) {
+        this.currentWeek ++;
+        this.events.emit(EventKeys.SetWeek, this.currentWeek);
+      } 
+      else if (this.currentWeek = this.maxWeek - 1) {
+        this.currentWeek ++;
+        this.events.emit(EventKeys.SetWeek, this.currentWeek);
+        this.leftMenu.emit(EventKeys.Complete);
+        this.timer.paused = true;
+      } else {
+        this.leftMenu.emit(EventKeys.Complete);
+        this.timer.paused = true;
+      }
+    };
   }
 }
