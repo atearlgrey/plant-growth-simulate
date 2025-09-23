@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
+import FontKeys from 'consts/FontKeys'
 
 export default class LightMenu extends Phaser.GameObjects.Container {
   private lightButtons: { [key: string]: Phaser.GameObjects.Graphics } = {}
@@ -8,29 +9,44 @@ export default class LightMenu extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, x: number, y: number, defaultMode: string | undefined = undefined) {
     super(scene, x, y)
 
-    this.add(scene.add.text(0, 0, 'Ánh sáng', { fontSize: '16px', color: '#fff' }))
+    this.add(scene.add.text(0, 0, 'Ánh sáng', { fontSize: '20px', color: '#fff', fontStyle: FontKeys.BoldType, fontFamily: FontKeys.TahomaFamily }))
 
-    this.createRadioButton(0, 25, 'sun')
-    this.createRadioButton(0, 55, 'led')
-    this.createRadioButton(0, 85, 'mixed')
+    this.createRadioButton(0, 35, 'Tự nhiên')
+    this.createRadioButton(0, 65, 'Đèn led')
+    this.createRadioButton(0, 95, 'Hỗn hợp')
 
     scene.add.existing(this)
 
     // chọn mặc định khi load
     this.selectLight(defaultMode)
+
+    // Chọn màu và độ dày của nét vẽ
+    const graphics2 = this.scene.add.graphics();
+    graphics2.lineStyle(4, 0x0639c4ff, 1); // (độ dày, màu, alpha)
+    graphics2.beginPath();
+    graphics2.moveTo(1625, y + 35);
+    graphics2.lineTo(1905, y + 35);  // điểm kết thúc (x2, y2)
+    graphics2.strokePath();      // vẽ đường
+
+    graphics2.lineStyle(4, 0x0639c4ff, 1); // (độ dày, màu, alpha)
+    graphics2.beginPath();
+    graphics2.moveTo(1625, y + 180);
+    graphics2.lineTo(1905, y + 180);  // điểm kết thúc (x2, y2)
+    graphics2.strokePath();      // vẽ đường
   }
 
   private createRadioButton(x: number, y: number, label: string) {
     const g = this.scene.add.graphics()
-    g.setInteractive(new Phaser.Geom.Rectangle(x, y, 20, 20), Phaser.Geom.Rectangle.Contains)
+    g.setInteractive(new Phaser.Geom.Rectangle(x, y, 15, 15), Phaser.Geom.Rectangle.Contains)
 
     // vẽ ban đầu
     g.fillStyle(0x0077cc, 1)
-    g.fillRoundedRect(x, y, 20, 20, 5)
+    g.fillRoundedRect(x, y, 15, 15, 8)
 
-    const text = this.scene.add.text(x + 30, y + 10, label, {
+    const text = this.scene.add.text(x + 30, y + 6, label, {
       fontSize: '14px',
-      color: '#fff'
+      color: '#fff', 
+      fontFamily: FontKeys.TahomaFamily
     }).setOrigin(0, 0.5)
 
     this.add([g, text])
@@ -48,7 +64,7 @@ export default class LightMenu extends Phaser.GameObjects.Container {
       const g = this.lightButtons[key]
       g.clear()
       g.fillStyle(key === mode ? 0xffcc00 : 0x0077cc, 1)
-      g.fillRoundedRect(g.input?.hitArea.x ?? 0, g.input?.hitArea.y ?? 0, 20, 20, 5)
+      g.fillRoundedRect(g.input?.hitArea.x ?? 0, g.input?.hitArea.y ?? 0, 15, 15, 8)
     })
 
     this.emit(EventKeys.LightChange, mode)

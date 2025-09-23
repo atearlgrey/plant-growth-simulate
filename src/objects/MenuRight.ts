@@ -14,7 +14,7 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     super(scene, x, y)
 
     // Panel nền
-    const bg = new Panel(scene, 0, 0, 200, 250, 15);
+    const bg = new Panel(scene, 0, 0, 300, 500, 15);
     this.add(bg);
 
     // Menu plant
@@ -23,7 +23,7 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data));
 
     // Menu light
-    this.lightMenu = new LightMenu(scene, 10, 120, defaultLightMode);
+    this.lightMenu = new LightMenu(scene, 10, 140, defaultLightMode);
     this.add(this.lightMenu);
     this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode));
 

@@ -124,7 +124,7 @@ export default class PlantScene extends Phaser.Scene {
 
     // Right menu
     if (!this.rightMenu) {
-      this.rightMenu = new RightPanel(this, width - 220, 50, this.lightMode);
+      this.rightMenu = new RightPanel(this, width - 305, 50, this.lightMode);
     } else {
       this.rightMenu.setPosition(width - 220, 50);
     }
