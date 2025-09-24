@@ -255,6 +255,14 @@ export default class PlantScene extends Phaser.Scene {
 
     this.leftMenu.on(EventKeys.Result, () => {
       console.log('📊 Show results');
+      this.scene.launch('ResultScene', {
+        returnTo: this.sys.settings.key,
+        title: 'Bảng kết quả thí nghiệm',
+        plant: this.plantType,
+        lightMode: this.lightMode,
+        growthData: this.growthData
+      });
+      this.scene.pause();
     });
 
     this.leftMenu.on(EventKeys.Conclusion, () => {
@@ -279,6 +287,7 @@ export default class PlantScene extends Phaser.Scene {
         this.growthData
       );
       this.plant.setWeek(this.currentWeek);
+      this.plantType = plantType;
     });
 
     this.rightMenu.on(EventKeys.LightChange, (mode: LightType) => {
