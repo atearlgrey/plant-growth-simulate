@@ -12,6 +12,8 @@ enum TextureKeys {
     ButtonResult = 'button-result',
     ButtonConclusion = 'button-conclusion',
     ButtonComplete = 'button-complete',
+    ButtonSound = 'button-sound',
+    ButtonMute = 'button-mute',
 
     Window = 'window',
     LampBulb = 'lamp-bulb',

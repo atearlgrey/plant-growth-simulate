@@ -15,7 +15,7 @@ export default class LightMenu extends Phaser.GameObjects.Container {
     super(scene, x, y)
 
     this.add(
-      scene.add.text(0, 0, 'Ánh sáng', {
+      scene.add.text(0, 0, 'Thiết lập ánh sáng', {
         fontSize: '20px',
         color: '#fff',
         fontStyle: FontKeys.BoldType,

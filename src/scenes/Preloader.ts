@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import AnimationKeys from 'consts/AnimationKeys'
 import SceneKeys from 'consts/SceneKeys'
 import TextureKeys from 'consts/TextureKeys'
+import VoiceKeys from 'consts/VoiceKeys'
 
 export default class Preloader extends Phaser.Scene {
     constructor() {
@@ -19,6 +20,8 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.ButtonResult, 'assets/btn-result.png');
         this.load.image(TextureKeys.ButtonConclusion, 'assets/btn-conclusion.png');
         this.load.image(TextureKeys.ButtonComplete, 'assets/btn-complete.png');
+        this.load.image(TextureKeys.ButtonSound, 'assets/btn-sound.png');
+        this.load.image(TextureKeys.ButtonMute, 'assets/btn-mute.png');
 
         this.load.image(TextureKeys.Window, 'assets/window.png');
         this.load.image(TextureKeys.LampBulb, 'assets/lightled.png');
@@ -33,6 +36,14 @@ export default class Preloader extends Phaser.Scene {
 
         this.load.image(TextureKeys.DefaultMorningGloryLeaf, 'assets/morning-glory-leaf.png');
         this.load.image(TextureKeys.DefaultLettuceLeaf, 'assets/lettuce-leaf.png');
+
+        // voice
+        this.load.audio(VoiceKeys.BGM, 'assets/voice/bgm/bgm.mp3');
+        this.load.audio(VoiceKeys.ButtonSelect, 'assets/voice/se/select.mp3');
+        this.load.audio(VoiceKeys.Start, 'assets/voice/se/start.mp3');
+        this.load.audio(VoiceKeys.Complete, 'assets/voice/se/complete.mp3');
+        this.load.audio(VoiceKeys.Plant, 'assets/voice/se/plant.mp3');
+        this.load.audio(VoiceKeys.Grow, 'assets/voice/se/grow.mp3');
     }
 
     create() {
