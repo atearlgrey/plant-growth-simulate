@@ -23,7 +23,7 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
     ];
 
     this.leafIcons = plants.map((plant) => {
-      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.05).setInteractive();
+      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.12).setInteractive();
       leaf.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
         this.startDragLeaf(plant.key, plant.type, pointer);
       })
@@ -39,7 +39,7 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
 
   private startDragLeaf(textureKey: string, plantType: string, pointer: Phaser.Input.Pointer) {
     const scene = this.scene
-    const leaf = scene.add.image(pointer.x, pointer.y, textureKey).setOrigin(0.5).setScale(0.05).setDepth(1000);
+    const leaf = scene.add.image(pointer.x, pointer.y, textureKey).setOrigin(0.5).setScale(0.12).setDepth(1000);
 
     const moveHandler = (p: Phaser.Input.Pointer) => {
       leaf.setPosition(p.x, p.y)
