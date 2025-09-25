@@ -32,6 +32,10 @@ export default class Plant extends Phaser.GameObjects.Image {
     this.setInteractive({ draggable: true });
   }
 
+  setLightMode(mode: string) {
+    this.lightMode = mode;
+  }
+
   /** Cập nhật cây theo tuần */
   setWeek(week: number) {
     const weekData = this.growthData.weeks.find((w: any) => w.week === week);
@@ -63,6 +67,7 @@ export default class Plant extends Phaser.GameObjects.Image {
       });
       this.scene.load.start();
     } else {
+      console.log('Texture already loaded:', key);
       applyTexture();
     }
 

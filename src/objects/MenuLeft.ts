@@ -9,8 +9,10 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
   private resetButton!: Phaser.GameObjects.Image
   private resultButton!: Phaser.GameObjects.Image
   private conclusionButton!: Phaser.GameObjects.Image
+  private soundButton!: Phaser.GameObjects.Image
 
   private currentState: StateKeys = StateKeys.Initial
+  private currentSoundOn: boolean = true
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
@@ -23,6 +25,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     this.mainButton = this.scene.add.image(0, 0, TextureKeys.ButtonStart).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.mainButton])
     this.mainButton.on('pointerdown', () => this.handleMainButton())
+    this.enableButton(this.mainButton, false);
 
     // === Reset ===
     this.resetButton = this.scene.add.image(0, 100, TextureKeys.ButtonReset).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
@@ -43,6 +46,11 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     const completeButton = this.scene.add.image(0, 400, TextureKeys.ButtonComplete).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([completeButton])
     completeButton.on('pointerdown', () => this.emit(EventKeys.Complete))
+
+    // === Complete ===
+    this.soundButton = this.scene.add.image(0, 500, TextureKeys.ButtonSound).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.soundButton])
+    this.soundButton.on('pointerdown', () => this.handleSoundButton())
 
     scene.add.existing(this)
 
@@ -67,15 +75,17 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     }
   }
 
-  /** Set state từ bên ngoài */
-  public setCurrentState(newState: StateKeys) {
-    if (this.currentState === newState) return
-    if (newState === AppStates.Complete && this.currentState !== AppStates.Running) {
-      console.warn('Chỉ có thể chuyển sang Complete từ trạng thái Running')
-      return
+  /** Xử lý toggle nút sound */
+  private handleSoundButton() {
+    if (this.currentSoundOn === true) {
+      this.currentSoundOn = false;
+      this.soundButton.setTexture(TextureKeys.ButtonMute)
+      this.emit(EventKeys.Mute)
+    } else {
+      this.currentSoundOn = true;
+      this.soundButton.setTexture(TextureKeys.ButtonSound)
+      this.emit(EventKeys.UnMute)
     }
-    this.currentState = newState
-    this.updateUI()
   }
 
   /** Cập nhật giao diện theo state */
@@ -120,5 +130,20 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
       circle.disableInteractive()
       circle.setAlpha(0.5)
     }
+  }
+
+  /** Set state từ bên ngoài */
+  public setCurrentState(newState: StateKeys) {
+    if (this.currentState === newState) return
+    if (newState === AppStates.Complete && this.currentState !== AppStates.Running) {
+      console.warn('Chỉ có thể chuyển sang Complete từ trạng thái Running')
+      return
+    }
+    this.currentState = newState
+    this.updateUI()
+  }
+
+  public enableStartButton() {
+    this.enableButton(this.mainButton, true);
   }
 }

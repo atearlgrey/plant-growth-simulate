@@ -15,6 +15,7 @@ import Table from 'objects/Table';
 import Pot from 'objects/PlantPot';
 import Plant from 'objects/Plant';
 import StateKeys from 'consts/AppStates';
+import VoiceKeys from 'consts/VoiceKeys';
 
 export default class PlantScene extends Phaser.Scene {
   private plant!: Plant;
@@ -24,6 +25,7 @@ export default class PlantScene extends Phaser.Scene {
   private maxWeek: number = 4;
   private plantType: string = 'lettuce';
   private lightMode: LightType = LightType.Sun;
+  private volume: number = 0.5;
 
   private background!: Phaser.GameObjects.Image;
   private window!: Window;
@@ -33,6 +35,12 @@ export default class PlantScene extends Phaser.Scene {
   private ledLight?: Phaser.GameObjects.Graphics;
 
   private timer!: Phaser.Time.TimerEvent;
+  private bgm!: Phaser.Sound.BaseSound;
+  private buttonSelectVoice!: Phaser.Sound.BaseSound;
+  private startVoice!: Phaser.Sound.BaseSound;
+  private completeVoice!: Phaser.Sound.BaseSound;
+  private plantVoice!: Phaser.Sound.BaseSound;
+  private growVoice!: Phaser.Sound.BaseSound;
 
   private leftMenu!: LeftPanel;
   private rightMenu!: RightPanel;
@@ -44,7 +52,7 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.json('growthData', './data/growth1.json');
+    this.load.json('growthData', './data/growth.json');
   }
 
   create() {
@@ -140,12 +148,17 @@ export default class PlantScene extends Phaser.Scene {
 
     // update lights sau khi layout
     this.updateLights();
+
+    // voice
+    this.setupVoice();
   }
 
-  private resetPlant() {
+  private resetPlant(destroyOld: boolean = true) {
     this.currentWeek = 0;
     this.events.emit(EventKeys.SetWeek, 0);
-    this.plant?.destroy();
+    if (destroyOld) {
+      this.plant?.destroy();
+    }
   }
 
   /** Vẽ lại ánh sáng dựa trên lightMode hiện tại */
@@ -220,9 +233,12 @@ export default class PlantScene extends Phaser.Scene {
     // 🎯 Left menu events
     this.leftMenu.on(EventKeys.Start, () => {
       console.log('▶ Start');
+      this.resetPlant(false);
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
       this.timer.paused = false;
+      this.playSelectVoice();
+      this.playStartVoice();
     });
 
     this.leftMenu.on(EventKeys.Resume, () => {
@@ -230,6 +246,7 @@ export default class PlantScene extends Phaser.Scene {
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
       this.timer.paused = false;
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.Stop, () => {
@@ -237,20 +254,23 @@ export default class PlantScene extends Phaser.Scene {
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Paused);
       this.timer.paused = true;
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.Reset, () => {
       console.log('🔄 Reset');
-      this.resetPlant();
+      this.resetPlant(false);
       this.events.emit(EventKeys.EnableItems);
       this.leftMenu.setCurrentState(StateKeys.Initial);
       this.timer.paused = true;
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.Complete, () => {
       console.log('✅ Compete');
       this.events.emit(EventKeys.EnableItems);
       this.leftMenu.setCurrentState(StateKeys.Complete);
+      this.playCompleteVoice();
     });
 
     this.leftMenu.on(EventKeys.Result, () => {
@@ -263,6 +283,7 @@ export default class PlantScene extends Phaser.Scene {
         growthData: this.growthData
       });
       this.scene.pause();
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.Conclusion, () => {
@@ -281,6 +302,17 @@ export default class PlantScene extends Phaser.Scene {
         ]
       } as import('./ConclusionScene').ConclusionData);
       this.scene.pause();
+      this.playSelectVoice();
+    });
+
+    this.leftMenu.on(EventKeys.Mute, () => {
+      console.log('📘 Mute');
+      this.stopBgmVoice();
+    });
+
+    this.leftMenu.on(EventKeys.UnMute, () => {
+      console.log('📘 UnMute');
+      this.startBgmVoice();
     });
 
     // 🎯 Right menu events
@@ -302,12 +334,15 @@ export default class PlantScene extends Phaser.Scene {
       );
       this.plant.setWeek(this.currentWeek);
       this.plantType = plantType;
+      this.leftMenu.enableStartButton();
+      this.playYeahVoice();
     });
 
     this.rightMenu.on(EventKeys.LightChange, (mode: LightType) => {
       console.log('💡 Light mode:', mode);
       this.lightMode = mode;
       this.updateLights();
+      if (this.plant) { this.plant.setLightMode(mode); }
     });
 
     // 🎯 Slider events
@@ -321,12 +356,13 @@ export default class PlantScene extends Phaser.Scene {
       if (this.plant) {
         this.plant.setWeek(week);
       }
+      this.playGrowVoice();
     });
   }
 
   private settingTimer() {
     this.timer = this.time.addEvent({
-      delay: 2000,
+      delay: 5000,
       loop: true,
       paused: true
     });
@@ -346,5 +382,82 @@ export default class PlantScene extends Phaser.Scene {
         this.timer.paused = true;
       }
     };
+  }
+
+  private setupVoice() {
+    const cfgBGMAudio = {
+      key: VoiceKeys.BGM,
+      mute: false,
+      volume: this.volume,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: true,
+      delay: 0,
+    };
+
+    if (!this.bgm) {
+      this.bgm = this.sound.add(VoiceKeys.BGM, cfgBGMAudio);
+      if (!this.bgm.isPlaying) {
+        this.bgm.play();
+      }
+    }
+
+    this.buttonSelectVoice = this.sound.add(VoiceKeys.ButtonSelect, { mute: false, volume: 0.5 });
+    this.startVoice = this.sound.add(VoiceKeys.Start, { mute: false, volume: 0.5 });
+    this.completeVoice = this.sound.add(VoiceKeys.Complete, { mute: false, volume: 0.5 });
+    this.plantVoice = this.sound.add(VoiceKeys.Plant, { mute: false, volume: 0.5 });
+    this.growVoice = this.sound.add(VoiceKeys.Grow, { mute: false, volume: 0.5 });
+  }
+
+  playSelectVoice() {
+    if (!this.buttonSelectVoice) {
+      this.buttonSelectVoice = this.sound.add(VoiceKeys.ButtonSelect, { mute: false, volume: 0.5 });
+    }
+    this.buttonSelectVoice.play()
+  }
+
+  playStartVoice() {
+    if (!this.startVoice) {
+      this.startVoice = this.sound.add(VoiceKeys.Start, { mute: false, volume: 0.5 });
+    }
+    this.startVoice.play()
+  }
+
+  playCompleteVoice() {
+    if (!this.completeVoice) {
+      this.completeVoice = this.sound.add(VoiceKeys.Complete, { mute: false, volume: 0.5 });
+    }
+    this.completeVoice.play()
+  }
+
+  playYeahVoice() {
+    if (!this.plantVoice) {
+      this.plantVoice = this.sound.add(VoiceKeys.Plant, { mute: false, volume: 0.5 });
+    }
+    this.plantVoice.play()
+  }
+
+  playGrowVoice() {
+    if (!this.growVoice) {
+      this.growVoice = this.sound.add(VoiceKeys.Plant, { mute: false, volume: 0.5 });
+    }
+    this.growVoice.play()
+  }
+
+  private stopBgmVoice() {
+    this.volume = 0;
+
+    if (this.bgm.isPlaying) {
+      this.bgm.stop();
+    }
+  }
+
+  private startBgmVoice() {
+    this.volume = 0.5;
+
+    if (!this.bgm.isPlaying) {
+      this.bgm.play();
+    }
   }
 }

@@ -8,6 +8,8 @@ enum EventKeys {
   Result = 'process-result',
   Conclusion = 'process-conclusion',
   Complete = 'process-complete',
+  Mute = 'process-mute',
+  UnMute = 'process-unmute',
 
   // UI control
   LeafDrag = 'leaf-drag',
