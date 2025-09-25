@@ -44,6 +44,43 @@ export default class Preloader extends Phaser.Scene {
         this.load.audio(VoiceKeys.Complete, 'assets/voice/se/complete.mp3');
         this.load.audio(VoiceKeys.Plant, 'assets/voice/se/plant.mp3');
         this.load.audio(VoiceKeys.Grow, 'assets/voice/se/grow.mp3');
+
+        // load image for plant
+        this.load.image(TextureKeys.MorningGlorySunWeek0, 'assets/morning-glory/sun/week0.png');
+        this.load.image(TextureKeys.MorningGlorySunWeek1, 'assets/morning-glory/sun/week1.png');
+        this.load.image(TextureKeys.MorningGlorySunWeek2, 'assets/morning-glory/sun/week2.png');
+        this.load.image(TextureKeys.MorningGlorySunWeek3, 'assets/morning-glory/sun/week3.png');
+        this.load.image(TextureKeys.MorningGlorySunWeek4, 'assets/morning-glory/sun/week4.png');
+
+        this.load.image(TextureKeys.MorningGloryLedWeek0, 'assets/morning-glory/led/week0.png');
+        this.load.image(TextureKeys.MorningGloryLedWeek1, 'assets/morning-glory/led/week1.png');
+        this.load.image(TextureKeys.MorningGloryLedWeek2, 'assets/morning-glory/led/week2.png');
+        this.load.image(TextureKeys.MorningGloryLedWeek3, 'assets/morning-glory/led/week3.png');
+        this.load.image(TextureKeys.MorningGloryLedWeek4, 'assets/morning-glory/led/week4.png');
+
+        this.load.image(TextureKeys.MorningGloryMixedWeek0, 'assets/morning-glory/mixed/week0.png');
+        this.load.image(TextureKeys.MorningGloryMixedWeek1, 'assets/morning-glory/mixed/week1.png');
+        this.load.image(TextureKeys.MorningGloryMixedWeek2, 'assets/morning-glory/mixed/week2.png');
+        this.load.image(TextureKeys.MorningGloryMixedWeek3, 'assets/morning-glory/mixed/week3.png');
+        this.load.image(TextureKeys.MorningGloryMixedWeek4, 'assets/morning-glory/mixed/week4.png');
+
+        this.load.image(TextureKeys.LettuceSunWeek0, 'assets/lettuce/sun/week0.png');
+        this.load.image(TextureKeys.LettuceSunWeek1, 'assets/lettuce/sun/week1.png');
+        this.load.image(TextureKeys.LettuceSunWeek2, 'assets/lettuce/sun/week2.png');
+        this.load.image(TextureKeys.LettuceSunWeek3, 'assets/lettuce/sun/week3.png');
+        this.load.image(TextureKeys.LettuceSunWeek4, 'assets/lettuce/sun/week4.png');
+
+        this.load.image(TextureKeys.LettuceLedWeek0, 'assets/lettuce/led/week0.png');
+        this.load.image(TextureKeys.LettuceLedWeek1, 'assets/lettuce/led/week1.png');
+        this.load.image(TextureKeys.LettuceLedWeek2, 'assets/lettuce/led/week2.png');
+        this.load.image(TextureKeys.LettuceLedWeek3, 'assets/lettuce/led/week3.png');
+        this.load.image(TextureKeys.LettuceLedWeek4, 'assets/lettuce/led/week4.png');
+
+        this.load.image(TextureKeys.LettuceMixedWeek0, 'assets/lettuce/mixed/week0.png');
+        this.load.image(TextureKeys.LettuceMixedWeek1, 'assets/lettuce/mixed/week1.png');
+        this.load.image(TextureKeys.LettuceMixedWeek2, 'assets/lettuce/mixed/week2.png');
+        this.load.image(TextureKeys.LettuceMixedWeek3, 'assets/lettuce/mixed/week3.png');
+        this.load.image(TextureKeys.LettuceMixedWeek4, 'assets/lettuce/mixed/week4.png');
     }
 
     create() {

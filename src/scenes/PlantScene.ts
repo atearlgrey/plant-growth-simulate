@@ -153,10 +153,12 @@ export default class PlantScene extends Phaser.Scene {
     this.setupVoice();
   }
 
-  private resetPlant() {
+  private resetPlant(destroyOld: boolean = true) {
     this.currentWeek = 0;
     this.events.emit(EventKeys.SetWeek, 0);
-    this.plant?.destroy();
+    if (destroyOld) {
+      this.plant?.destroy();
+    }
   }
 
   /** Vẽ lại ánh sáng dựa trên lightMode hiện tại */
@@ -231,6 +233,7 @@ export default class PlantScene extends Phaser.Scene {
     // 🎯 Left menu events
     this.leftMenu.on(EventKeys.Start, () => {
       console.log('▶ Start');
+      this.resetPlant(false);
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
       this.timer.paused = false;
@@ -256,7 +259,7 @@ export default class PlantScene extends Phaser.Scene {
 
     this.leftMenu.on(EventKeys.Reset, () => {
       console.log('🔄 Reset');
-      this.resetPlant();
+      this.resetPlant(false);
       this.events.emit(EventKeys.EnableItems);
       this.leftMenu.setCurrentState(StateKeys.Initial);
       this.timer.paused = true;
@@ -308,6 +311,7 @@ export default class PlantScene extends Phaser.Scene {
         this.growthData
       );
       this.plant.setWeek(this.currentWeek);
+      this.leftMenu.enableStartButton();
       this.playYeahVoice();
     });
 
@@ -315,6 +319,7 @@ export default class PlantScene extends Phaser.Scene {
       console.log('💡 Light mode:', mode);
       this.lightMode = mode;
       this.updateLights();
+      if (this.plant) { this.plant.setLightMode(mode); }
     });
 
     // 🎯 Slider events
@@ -358,14 +363,14 @@ export default class PlantScene extends Phaser.Scene {
 
   private setupVoice() {
     const cfgBGMAudio = {
-        key: VoiceKeys.BGM,
-        mute: false,
-        volume: this.volume,
-        rate: 1,
-        detune: 0,
-        seek: 0,
-        loop: true,
-        delay: 0,
+      key: VoiceKeys.BGM,
+      mute: false,
+      volume: this.volume,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: true,
+      delay: 0,
     };
 
     if (!this.bgm) {
