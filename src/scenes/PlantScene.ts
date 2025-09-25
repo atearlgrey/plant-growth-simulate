@@ -25,7 +25,7 @@ export default class PlantScene extends Phaser.Scene {
   private maxWeek: number = 4;
   private plantType: string = 'lettuce';
   private lightMode: LightType = LightType.Sun;
-  private volume: number = 0.5;
+  private volume: number = 0.3;
 
   private background!: Phaser.GameObjects.Image;
   private window!: Window;
@@ -157,6 +157,7 @@ export default class PlantScene extends Phaser.Scene {
     this.currentWeek = 0;
     this.events.emit(EventKeys.SetWeek, 0);
     if (destroyOld) {
+      this.plant?.destroyDialog();
       this.plant?.destroy();
     }
   }
@@ -283,6 +284,16 @@ export default class PlantScene extends Phaser.Scene {
       this.playSelectVoice();
     });
 
+    this.leftMenu.on(EventKeys.Zoom, () => {
+      console.log('📘 Zoom');
+      this.plant?.showDialog();
+    });
+
+    this.leftMenu.on(EventKeys.UnZoom, () => {
+      console.log('📘 UnZoom');
+      this.plant?.hideDialog();
+    });
+
     this.leftMenu.on(EventKeys.Mute, () => {
       console.log('📘 Mute');
       this.stopBgmVoice();
@@ -299,6 +310,7 @@ export default class PlantScene extends Phaser.Scene {
     });
 
     this.pot.on(EventKeys.PlantDrop, (plantType: string) => {
+      this.plant?.destroyDialog();
       this.plant?.destroy(); // replace cây cũ
 
       const soilPos = this.pot.getSoilPosition(0.5);
@@ -431,7 +443,7 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   private startBgmVoice() {
-    this.volume = 0.5;
+    this.volume = 0.3;
 
     if (!this.bgm.isPlaying) {
       this.bgm.play();

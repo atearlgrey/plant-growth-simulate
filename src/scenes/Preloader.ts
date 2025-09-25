@@ -20,6 +20,8 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.ButtonResult, 'assets/btn-result.png');
         this.load.image(TextureKeys.ButtonConclusion, 'assets/btn-conclusion.png');
         this.load.image(TextureKeys.ButtonComplete, 'assets/btn-complete.png');
+        this.load.image(TextureKeys.ButtonZoom, 'assets/btn-unzoom.png');
+        this.load.image(TextureKeys.ButtonUnZoom, 'assets/btn-zoom.png');
         this.load.image(TextureKeys.ButtonSound, 'assets/btn-sound.png');
         this.load.image(TextureKeys.ButtonMute, 'assets/btn-mute.png');
 

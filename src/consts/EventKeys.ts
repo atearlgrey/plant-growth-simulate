@@ -8,6 +8,8 @@ enum EventKeys {
   Result = 'process-result',
   Conclusion = 'process-conclusion',
   Complete = 'process-complete',
+  Zoom = 'process-zoom',
+  UnZoom = 'process-unzoom',
   Mute = 'process-mute',
   UnMute = 'process-unmute',
 
