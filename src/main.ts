@@ -2,6 +2,8 @@ import Phaser from 'phaser'
 
 import Preloader from './scenes/Preloader'
 import PlantScene from './scenes/PlantScene'
+import ResultScene from './scenes/ResultScene';
+import ConclusionScene from "./scenes/ConclusionScene";
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.WEBGL,
@@ -17,7 +19,9 @@ const config: Phaser.Types.Core.GameConfig = {
 			gravity: { y: 200 }
 		}
 	},
-	scene:  [Preloader, PlantScene]
+	parent: 'game',
+	dom: { createContainer: true },
+	scene:  [Preloader, PlantScene,ResultScene, ConclusionScene]
 }
 
 export default new Phaser.Game(config)

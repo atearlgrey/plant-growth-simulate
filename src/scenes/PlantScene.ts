@@ -44,7 +44,7 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.json('growthData', './data/growth.json');
+    this.load.json('growthData', './data/growth1.json');
   }
 
   create() {
@@ -267,6 +267,20 @@ export default class PlantScene extends Phaser.Scene {
 
     this.leftMenu.on(EventKeys.Conclusion, () => {
       console.log('📘 Show conclusion');
+      this.scene.launch('ConclusionScene', {
+        returnTo: this.scene.key,
+        size: 'sm',
+        bullets: [
+          'Xu hướng chung: Cả hai loài đều tăng dần số lá và chiều cao qua các tuần (0 → 4).',
+          'Tác động của chế độ ánh sáng có mẫu hình nhất quán cho cả hai loài.'
+        ],
+        modes: [
+          { key:'sun',   label:'Tự nhiên', leavesW4:'20 lá', heightW4:'20 cm', note:'Nhiều lá nhất' },
+          { key:'led',   label:'LED',      leavesW4:'16 lá', heightW4:'24 cm', note:'Trung gian' },
+          { key:'mixed', label:'Hỗn hợp',  leavesW4:'12 lá', heightW4:'28 cm', note:'Chiều cao lớn nhất' },
+        ]
+      } as import('./ConclusionScene').ConclusionData);
+      this.scene.pause();
     });
 
     // 🎯 Right menu events
