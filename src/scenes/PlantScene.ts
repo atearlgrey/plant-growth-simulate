@@ -276,11 +276,33 @@ export default class PlantScene extends Phaser.Scene {
 
     this.leftMenu.on(EventKeys.Result, () => {
       console.log('📊 Show results');
+      this.scene.launch('ResultScene', {
+        returnTo: this.sys.settings.key,
+        title: 'Bảng kết quả thí nghiệm',
+        plant: this.plantType,
+        lightMode: this.lightMode,
+        growthData: this.growthData
+      });
+      this.scene.pause();
       this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.Conclusion, () => {
       console.log('📘 Show conclusion');
+      this.scene.launch('ConclusionScene', {
+        returnTo: this.scene.key,
+        size: 'sm',
+        bullets: [
+          'Xu hướng chung: Cả hai loài đều tăng dần số lá và chiều cao qua các tuần (0 → 4).',
+          'Tác động của chế độ ánh sáng có mẫu hình nhất quán cho cả hai loài.'
+        ],
+        modes: [
+          { key:'sun',   label:'Tự nhiên', leavesW4:'20 lá', heightW4:'20 cm', note:'Nhiều lá nhất' },
+          { key:'led',   label:'LED',      leavesW4:'16 lá', heightW4:'24 cm', note:'Trung gian' },
+          { key:'mixed', label:'Hỗn hợp',  leavesW4:'12 lá', heightW4:'28 cm', note:'Chiều cao lớn nhất' },
+        ]
+      } as import('./ConclusionScene').ConclusionData);
+      this.scene.pause();
       this.playSelectVoice();
     });
 
@@ -323,6 +345,7 @@ export default class PlantScene extends Phaser.Scene {
         this.growthData
       );
       this.plant.setWeek(this.currentWeek);
+      this.plantType = plantType;
       this.leftMenu.enableStartButton();
       this.playYeahVoice();
     });
