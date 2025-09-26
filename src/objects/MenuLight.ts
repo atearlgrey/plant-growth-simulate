@@ -38,13 +38,13 @@ export default class LightMenu extends Phaser.GameObjects.Container {
     graphics2.lineStyle(4, 0x0639c4ff, 1)
     graphics2.beginPath()
     graphics2.moveTo(1625, y + 35)
-    graphics2.lineTo(1905, y + 35)
+    graphics2.lineTo(1875, y + 35)
     graphics2.strokePath()
 
     graphics2.lineStyle(4, 0x0639c4ff, 1)
     graphics2.beginPath()
     graphics2.moveTo(1625, y + 180)
-    graphics2.lineTo(1905, y + 180)
+    graphics2.lineTo(1875, y + 180)
     graphics2.strokePath()
   }
 
