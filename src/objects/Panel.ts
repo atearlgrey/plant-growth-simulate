@@ -1,32 +1,45 @@
-// Copyright 2025 admin3s
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-//     https://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 import Phaser from 'phaser'
 
 export default class Panel extends Phaser.GameObjects.Container {
-  constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, radius = 12) {
+  private graphics!: Phaser.GameObjects.Graphics
+  private panelWidth: number
+  private panelHeight: number
+  private radius: number
+
+  constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number, radius: number = 0) {
     super(scene, x, y)
 
-    // Vẽ bo góc bằng Graphics
-    const g = scene.add.graphics()
-    g.lineStyle(2, 0x0077cc, 1) // màu viền xanh
-    g.fillStyle(0x000000, 0.5)  // nền đen trong suốt
+    this.panelWidth = width
+    this.panelHeight = height
+    this.radius = radius
 
-    g.fillRoundedRect(0, 0, width, height, radius)
-    g.strokeRoundedRect(0, 0, width, height, radius)
+    this.graphics = scene.add.graphics()
+    this.add(this.graphics)
 
-    this.add(g)
+    this.redraw()
     scene.add.existing(this)
+  }
+
+  /** Vẽ lại panel */
+  private redraw() {
+    this.graphics.clear()
+    this.graphics.fillStyle(0x000000, 0.3) // ví dụ nền mờ
+    this.graphics.fillRoundedRect(0, 0, this.panelWidth, this.panelHeight, this.radius)
+  }
+
+  /** Resize panel */
+  public resize(width: number, height: number) {
+    this.panelWidth = width
+    this.panelHeight = height
+    this.redraw()
+  }
+
+  /** Getter cho size panel */
+  getPanelWidth() {
+    return this.panelWidth
+  }
+
+  getPanelHeight() {
+    return this.panelHeight
   }
 }
