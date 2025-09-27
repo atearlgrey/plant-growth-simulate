@@ -100,6 +100,7 @@ export default class LightMenu extends Phaser.GameObjects.Container {
     this.emit(EventKeys.LightChange, mode)
   }
 
+  /** Đổi mode từ bên ngoài */
   public setLight(mode: string) {
     this.selectLight(mode)
   }

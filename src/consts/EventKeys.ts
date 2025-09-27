@@ -17,10 +17,17 @@ enum EventKeys {
   PotDrag = 'pot-drag',
   SoilDrag = 'soil-drag',
   LeafDrag = 'leaf-drag',
+
+  PotDrop = 'pot-drop',
+  SoilDrop = 'soil-drop',
   PlantDrop = 'plant-drop',
+  WaterDrop = 'water-drop',
+
+  // State change
   LightChange = 'light-change',
   WaterChange = 'water-change',
 
+  // Item control
   EnableItems = 'enable-items',
   DisableItems = 'disable-items',
 

@@ -76,7 +76,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
       this.emit(EventKeys.Start)
     }
   }
-  
+
   /** Xử lý toggle nút zoom */
   private handleZoomButton() {
     if (this.currentZoomOn === true) {
@@ -108,6 +108,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     switch (this.currentState) {
       case AppStates.Initial:
         this.mainButton.setTexture(TextureKeys.ButtonStart)
+        this.enableButton(this.mainButton, false)
         this.enableButton(this.resetButton, true)
         this.enableButton(this.resultButton, false)
         this.enableButton(this.conclusionButton, false)
@@ -115,6 +116,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
 
       case AppStates.Running:
         this.mainButton.setTexture(TextureKeys.ButtonStop)
+        this.enableButton(this.mainButton, true)
         this.enableButton(this.resetButton, false)
         this.enableButton(this.resultButton, false)
         this.enableButton(this.conclusionButton, false)
@@ -122,6 +124,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
 
       case AppStates.Paused:
         this.mainButton.setTexture(TextureKeys.ButtonResume)
+        this.enableButton(this.mainButton, true)
         this.enableButton(this.resetButton, true)
         this.enableButton(this.resultButton, false)
         this.enableButton(this.conclusionButton, false)
@@ -129,6 +132,7 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
 
       case AppStates.Complete:
         this.mainButton.setTexture(TextureKeys.ButtonStart)
+        this.enableButton(this.mainButton, true)
         this.enableButton(this.resetButton, true)
         this.enableButton(this.resultButton, true)
         this.enableButton(this.conclusionButton, true)

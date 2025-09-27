@@ -3,8 +3,10 @@ import { arrangeItemsCenter } from 'helpers/GraphicItemArrange'
 
 import EventKeys from 'consts/EventKeys'
 import TextureKeys from 'consts/TextureKeys'
-import PlantType from 'consts/PlantType'
 import FontKeys from 'consts/FontKeys'
+
+import PlantType from 'consts/PlantType'
+import PotType from 'consts/PotType'
 
 export default class PotMenu extends Phaser.GameObjects.Container {
   private potIcons: Phaser.GameObjects.Image[] = []
@@ -25,14 +27,18 @@ export default class PotMenu extends Phaser.GameObjects.Container {
     this.add(title)
 
     const pots = [
-      { key: TextureKeys.SmallPot, type: PlantType.MorningGlory, label: 'Chậu nhỏ' },
-      { key: TextureKeys.MediumPot, type: PlantType.Lettuce, label: 'Chậu vừa' },
-      { key: TextureKeys.LargePot, type: PlantType.Lettuce, label: 'Chậu to' },
+      { key: TextureKeys.SmallPot, type: PotType.SmallPot, label: 'Chậu nhỏ' },
+      { key: TextureKeys.MediumPot, type: PotType.MediumPot, label: 'Chậu vừa' },
+      { key: TextureKeys.LargePot, type: PotType.LargePot, label: 'Chậu to' },
     ]
 
     pots.forEach((pot, index) => {
       const scale = 0.1 + index * 0.03
-      const icon = scene.add.image(0, 0, pot.key).setOrigin(0.5).setScale(scale).setInteractive()
+      const icon = scene.add.image(0, 0, pot.key)
+                            .setOrigin(0.5)
+                            .setScale(scale)
+                            .setInteractive({ draggable: true })
+                            .setName(pot.type);
 
       icon.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
         this.startDragIcon(pot.key, pot.type, pointer)
@@ -80,7 +86,7 @@ export default class PotMenu extends Phaser.GameObjects.Container {
     const upHandler = () => {
       scene.input.off('pointermove', moveHandler)
       scene.input.off('pointerup', upHandler)
-      this.emit(EventKeys.LeafDrag, { leaf: icon, plantType: potType })
+      this.emit(EventKeys.PotDrag, { pot: icon, plantType: potType })
     }
     scene.input.once('pointerup', upHandler)
   }
