@@ -34,14 +34,20 @@ enum TextureKeys {
     SandySoil = 'sandy-soil',
     OrganicSoil = 'organic-soil',
 
+    // leaf icons
+    MorningGloryLeaf = 'morning-glory-leaf',
+    LettuceLeaf = 'lettuce-leaf',
+
     // pot icons
     SmallPot = 'small-pot',
     MediumPot = 'medium-pot',
     LargePot = 'large-pot',
-
-    // leaf icons
-    MorningGloryLeaf = 'morning-glory-leaf',
-    LettuceLeaf = 'lettuce-leaf',
+    
+    // pot with soil
+    PotEmpty = 'pot-empty',
+    PotGardenSoil = 'pot-garden-soil',
+    PotSandySoil = 'pot-sandy-soil',
+    PotOrganicSoil = 'pot-organic-soil',
 
 
     BucketNoWater = 'bucket-no-water',

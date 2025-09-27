@@ -18,6 +18,8 @@ import StateKeys from 'consts/AppStates';
 import VoiceKeys from 'consts/VoiceKeys';
 import WaterType from 'consts/WaterType';
 import WaterBucket from 'objects/WaterBucket';
+import PotType from '~/consts/PotType';
+import SoilType from '~/consts/SoilType';
 
 export default class PlantScene extends Phaser.Scene {
   private plant!: Plant;
@@ -25,6 +27,8 @@ export default class PlantScene extends Phaser.Scene {
   private growthData: any;
   private currentWeek: number = 0;
   private maxWeek: number = 4;
+  private potType: string = 'small';
+  private soilType: SoilType | undefined = undefined;
   private plantType: string = 'lettuce';
   private lightMode: LightType = LightType.Sun;
   private waterMode: WaterType = WaterType.One;
@@ -93,7 +97,7 @@ export default class PlantScene extends Phaser.Scene {
         .setOrigin(0)
         .setScrollFactor(0, 0)
         .setName(TextureKeys.BackgroundRoom)
-        .setDisplaySize(width, height);
+        .setDisplaySize(width, height).setDepth(-10);
     } else {
       this.background.setDisplaySize(width, height);
     }
@@ -116,16 +120,9 @@ export default class PlantScene extends Phaser.Scene {
 
     // Table
     if (!this.table) {
-      this.table = new Table(this, width / 2, height / 2 + 200);
+      this.table = new Table(this, width / 2, height / 2 + 200).setDepth(5);
     } else {
       this.table.setPosition(width / 2, height / 2 + 200);
-    }
-
-    // Pot
-    if (!this.pot) {
-      this.pot = new Pot(this, width / 2, height / 2); // chỉnh offset hợp lý
-    } else {
-      this.pot.setPosition(width / 2, height / 2);
     }
 
     // WaterBucket
@@ -179,46 +176,50 @@ export default class PlantScene extends Phaser.Scene {
     this.sunLight?.destroy();
     this.ledLight?.destroy();
 
-    if (!this.pot) return;
+    if (!this.table) return;
+
+    // Lấy mép trái/phải của mặt bàn
+    const { left, right } = this.table.getSurfacePoints();
+    const midX = (left.x + right.x) / 2;
+    const topY = left.y + 90; // cùng y cho cả trái/phải
 
     if (this.lightMode === LightType.Sun || this.lightMode === LightType.Mixed) {
-      this.sunLight = this.drawSunLightFromWindow(this.window, this.pot.x, this.pot.y - 35);
+      this.sunLight = this.drawSunLightFromWindow(this.window, left, right, topY);
     }
 
     if (this.lightMode === LightType.Led || this.lightMode === LightType.Mixed) {
       const bulbPos = this.lamp.getBulbPosition();
-      this.ledLight = this.drawLedLight(bulbPos.x, bulbPos.y + 10, this.pot.x, this.pot.y - 35);
+      this.ledLight = this.drawLedLight(bulbPos.x, bulbPos.y + 10, left, right, topY);
       this.lamp.toggle(true);
     }
   }
 
-  /** Ánh sáng mặt trời từ cửa sổ xuống chậu */
-  private drawSunLightFromWindow(window: Window, potX: number, potY: number) {
+  /** Ánh sáng mặt trời từ cửa sổ xuống mặt bàn */
+  private drawSunLightFromWindow(
+    window: Window,
+    left: { x: number; y: number },
+    right: { x: number; y: number },
+    topY: number
+  ) {
     const { bottomLeft, bottomRight, topRight } = window.getCorners();
     const g = this.add.graphics();
     g.fillStyle(0xffff99, 0.25);
 
-    // ánh sáng từ mép trái
+    // ánh sáng phủ toàn bộ chiều ngang mặt bàn
+
+    g.beginPath();
+    g.moveTo(bottomRight.x, bottomRight.y);
+    g.lineTo(topRight.x, topRight.y);
+    g.lineTo(right.x - 55, topY - 90);
+    g.lineTo(left.x, topY);
+    g.closePath();
+    g.fillPath();
+
     g.beginPath();
     g.moveTo(bottomLeft.x, bottomLeft.y);
     g.lineTo(bottomRight.x, bottomRight.y);
-    g.lineTo(potX - 60, potY);
-    g.closePath();
-    g.fillPath();
-
-    // ánh sáng từ mép phải
-    g.beginPath();
-    g.moveTo(topRight.x, topRight.y);
-    g.lineTo(bottomRight.x, bottomRight.y);
-    g.lineTo(potX + 60, potY);
-    g.closePath();
-    g.fillPath();
-
-    // ánh sáng từ cạnh dưới
-    g.beginPath();
-    g.moveTo(bottomRight.x, bottomRight.y);
-    g.lineTo(potX - 60, potY);
-    g.lineTo(potX + 60, potY);
+    g.lineTo(left.x, topY);
+    g.lineTo(left.x, topY);
     g.closePath();
     g.fillPath();
 
@@ -226,20 +227,29 @@ export default class PlantScene extends Phaser.Scene {
     return g;
   }
 
-  /** Ánh sáng LED từ đèn trần xuống chậu */
-  private drawLedLight(ceilingX: number, ceilingY: number, potX: number, potY: number) {
+  /** Ánh sáng LED từ đèn trần xuống mặt bàn */
+  private drawLedLight(
+    ceilingX: number,
+    ceilingY: number,
+    left: { x: number; y: number },
+    right: { x: number; y: number },
+    topY: number
+  ) {
     const g = this.add.graphics();
     g.fillStyle(0x99ccff, 0.5);
+
     g.beginPath();
     g.moveTo(ceilingX - 40, ceilingY);
     g.lineTo(ceilingX + 40, ceilingY);
-    g.lineTo(potX + 60, potY);
-    g.lineTo(potX - 60, potY);
+    g.lineTo(right.x, topY);
+    g.lineTo(left.x, topY);
     g.closePath();
     g.fillPath();
+
     g.setDepth(1);
     return g;
   }
+
 
   /** Gom toàn bộ event binding vào 1 chỗ */
   private eventHandlers() {
@@ -272,11 +282,8 @@ export default class PlantScene extends Phaser.Scene {
 
     this.leftMenu.on(EventKeys.Reset, () => {
       console.log('🔄 Reset');
-      this.resetPlant(false);
-      this.events.emit(EventKeys.EnableItems);
-      this.leftMenu.setCurrentState(StateKeys.Initial);
-      this.stopTimer();
-      this.playSelectVoice();
+      this.resetExperiment()
+      this.playSelectVoice()
     });
 
     this.leftMenu.on(EventKeys.Complete, () => {
@@ -313,9 +320,9 @@ export default class PlantScene extends Phaser.Scene {
           'Rau cải cần ánh sáng vừa phải + nhiệt mát để lá đều, dày; nếu nóng quá dù sáng đủ vẫn giảm chất lượng lá.'
         ],
         modes: [
-          { key:'sun',   label:'Tự nhiên', leavesW4:'20 lá', heightW4:'20 cm', note:'Nhiều lá nhất' },
-          { key:'led',   label:'LED',      leavesW4:'16 lá', heightW4:'24 cm', note:'Trung gian' },
-          { key:'mixed', label:'Hỗn hợp',  leavesW4:'12 lá', heightW4:'28 cm', note:'Chiều cao lớn nhất' },
+          { key: 'sun', label: 'Tự nhiên', leavesW4: '20 lá', heightW4: '20 cm', note: 'Nhiều lá nhất' },
+          { key: 'led', label: 'LED', leavesW4: '16 lá', heightW4: '24 cm', note: 'Trung gian' },
+          { key: 'mixed', label: 'Hỗn hợp', leavesW4: '12 lá', heightW4: '28 cm', note: 'Chiều cao lớn nhất' },
         ]
       } as import('./ConclusionScene').ConclusionData);
       this.scene.pause();
@@ -343,27 +350,39 @@ export default class PlantScene extends Phaser.Scene {
     });
 
     // 🎯 Right menu events
-    this.rightMenu.on(EventKeys.LeafDrag, ({ leaf, plantType }) => {
-      this.pot.checkDrop(leaf, plantType);
+    this.rightMenu.on(EventKeys.PotDrag, ({ pot: pot, plantType: potType }) => {
+      if (this.table) {
+        this.table.checkDrop(pot, potType, 0.8, false);
+        this.potType = potType;
+      } else {
+        pot.destroy();
+      }
+    })
+
+    this.rightMenu.on(EventKeys.SoilDrag, ({ soil: soil, soilType: soilType }) => {
+      if (this.pot) {
+        this.pot.checkDrop(soil, 'soil', soilType, undefined, 2, false);
+        this.soilType = soilType;
+      } else {
+        soil.destroy();
+      }
     });
 
-    this.pot.on(EventKeys.PlantDrop, (plantType: string) => {
-      this.plant?.destroyDialog();
-      this.plant?.destroy(); // replace cây cũ
+    // khi table xác nhận có pot rơi vào
+    this.table.on(EventKeys.PotDrop, ({ x, y, potType }) => {
+      console.log('🪴 Pot dropped:', potType)
+      // Đặt pot ngay trên mặt bàn (chỉnh offset tuỳ loại pot)
+      const surFace = this.table.getSurfacePosition()
+      this.spawnPot(x, surFace.y + 50, potType)   // -10 để chậu "ăn" nhẹ xuống bàn
+    })
 
-      const soilPos = this.pot.getSoilPosition(0.5);
-      this.plant = new Plant(
-        this,
-        soilPos.x,
-        soilPos.y,
-        plantType,
-        this.lightMode,
-        this.growthData
-      );
-      this.plant.setWeek(this.currentWeek);
-      this.plantType = plantType;
-      this.leftMenu.enableStartButton();
-      this.playYeahVoice();
+    this.rightMenu.on(EventKeys.LeafDrag, ({ leaf, plantType }) => {
+      console.log('🍃 Leaf dragged:', plantType);
+      if (this.pot) {
+        this.pot.checkDrop(leaf, 'plant', plantType, false);
+      } else {
+        leaf.destroy();
+      }
     });
 
     this.rightMenu.on(EventKeys.LightChange, (mode: LightType) => {
@@ -394,6 +413,64 @@ export default class PlantScene extends Phaser.Scene {
     });
   }
 
+  private spawnPot(x: number, y: number, potType: PotType) {
+    // Xoá pot cũ nếu có
+    this.pot?.destroy();
+    this.plant?.destroyDialog();
+    this.plant?.destroy();
+
+    // Tạo pot mới
+    this.pot = new Pot(this, x, y, potType).setDepth(10);
+    this.potType = potType;
+
+    // Dọn listener cũ rồi gắn lại
+    this.pot.removeAllListeners(EventKeys.PlantDrop)
+    this.pot.on(EventKeys.PlantDrop, (plantType: string) => {
+      console.log('🌱 Plant dropped:', plantType)
+      this.spawnPlant(plantType)
+    })
+
+    this.pot.on(EventKeys.SoilDrop, (soilType: SoilType) => {
+      console.log('🌱 Soil dropped:', soilType)
+      this.soilType = soilType;
+      this.pot.setSoil(soilType);
+    })
+
+    // Cập nhật ánh sáng
+    this.updateLights()
+  }
+
+  private spawnPlant(plantType: string) {
+    // Dọn cây cũ
+    this.plant?.destroyDialog()
+    this.plant?.destroy()
+
+    this.plantType = plantType
+
+    // Lấy vị trí đất trong pot
+    const soilPos = this.pot!.getSoilPosition()
+
+    // Tạo cây mới
+    this.plant = new Plant(
+      this,
+      soilPos.x,
+      soilPos.y,
+      this.potType,
+      this.soilType,
+      this.plantType,
+      this.lightMode,
+      this.waterMode,
+      this.growthData
+    ).setDepth(11);
+    this.plant.setWeek(this.currentWeek)
+
+    // Cho phép nút Start
+    this.leftMenu.enableStartButton()
+
+    // Âm thanh
+    this.playYeahVoice()
+  }
+
   private settingTimer() {
     // 6s là 1 tuần
     const weekTime = 10000;
@@ -416,8 +493,7 @@ export default class PlantScene extends Phaser.Scene {
       this.timerCount++;
 
       // Đến điểm cây lớn
-      if (((this.timerCount * delay) % weekTime) === 0 )
-      {
+      if (((this.timerCount * delay) % weekTime) === 0) {
         if (this.currentWeek < this.maxWeek - 1) {
           this.currentWeek++;
           this.events.emit(EventKeys.SetWeek, this.currentWeek);
@@ -529,5 +605,42 @@ export default class PlantScene extends Phaser.Scene {
     if (!this.bgm.isPlaying) {
       this.bgm.play();
     }
+  }
+
+  private resetExperiment() {
+    console.log('🔄 Reset experiment')
+
+    // Xoá cây
+    this.plant?.destroyDialog()
+    this.plant?.destroy()
+    this.plant = undefined!
+
+    // Xoá pot
+    this.pot?.destroy()
+    this.pot = undefined!
+
+    // Reset state
+    this.currentWeek = 0
+    this.potType = ''
+    this.soilType = undefined
+    this.plantType = ''
+    this.lightMode = LightType.Sun
+    this.waterMode = WaterType.One
+
+    // Reset slider
+    this.slider.setWeek(0)
+
+    // Enable lại menus
+    this.events.emit(EventKeys.EnableItems)
+    this.events.emit(EventKeys.Reset);
+    this.leftMenu.setCurrentState(StateKeys.Initial)
+    this.rightMenu.setEnabled(true)
+
+    // Reset timer
+    this.stopTimer()
+    this.resetTimer()
+
+    // Reset light
+    this.updateLights()
   }
 }

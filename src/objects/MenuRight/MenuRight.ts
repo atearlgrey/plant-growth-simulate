@@ -19,14 +19,16 @@ export default class RightMenu extends Phaser.GameObjects.Container {
   private bg!: Panel
 
   // offset menu con
+  private defaultLightMode: string
+  private defaultWaterMode: string
   private readonly contentPadding = 10
 
   constructor(
     scene: Phaser.Scene,
     screenWidth: number,
     screenHeight: number,
-    defaultLightMode: string | undefined = undefined,
-    defaultWaterMode: string | undefined = undefined,
+    defaultLightMode: string,
+    defaultWaterMode: string,
   ) {
     const marginRight = 20
     const marginTop = 50
@@ -34,6 +36,8 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     const decorLineColor = 0x0639c4ff
 
     super(scene, screenWidth - 300 - marginRight, marginTop)
+    this.defaultLightMode = defaultLightMode;
+    this.defaultWaterMode = defaultWaterMode;
 
     // Panel nền
     this.bg = new Panel(scene, 0, 0, 300, 100, 15)
@@ -80,6 +84,10 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     // listen global enable/disable
     scene.events.on(EventKeys.DisableItems, () => this.setEnabled(false))
     scene.events.on(EventKeys.EnableItems, () => this.setEnabled(true))
+    scene.events.on(EventKeys.Reset, () => {
+      this.lightMenu.setLight(this.defaultLightMode);
+      this.waterMenu.setWater(this.defaultWaterMode);
+    })
   }
 
   /** Lấy contentWidth (panelWidth - padding*2) */

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import FontKeys from 'consts/FontKeys';
+import SoilType from 'consts/SoilType';
 
 interface PlantConfig {
   leaves: number;
@@ -11,8 +12,11 @@ interface PlantConfig {
 }
 
 export default class Plant extends Phaser.GameObjects.Image {
+  private potType: string;
+  private soilType: SoilType | undefined;
   private plantType: string;
   private lightMode: string;
+  private waterMode: string;
   private growthData: any;
 
   private detailDialog: Phaser.GameObjects.Container;
@@ -23,13 +27,19 @@ export default class Plant extends Phaser.GameObjects.Image {
     scene: Phaser.Scene,
     x: number,
     y: number,
+    potType: string,
+    soilType: SoilType | undefined,
     plantType: string,
     lightMode: string,
+    waterMode: string,
     growthData: any
   ) {
     super(scene, x, y, '');
+    this.potType = potType;
+    this.soilType = soilType;
     this.plantType = plantType;
     this.lightMode = lightMode;
+    this.waterMode = waterMode;
     this.growthData = growthData;
 
     scene.add.existing(this);
@@ -53,10 +63,16 @@ export default class Plant extends Phaser.GameObjects.Image {
       return;
     }
 
-    const config: PlantConfig =
-      weekData[this.plantType][this.lightMode] as PlantConfig;
+    const config: PlantConfig = weekData[this.plantType][this.lightMode] as PlantConfig;
 
     // Dynamic load ảnh từ public/
+    console.log('Plant growth with Pot:', this.potType);
+    console.log('with Soil:', this.soilType);
+    console.log('with Plant:', this.plantType);
+    console.log('with light mode:', this.lightMode);
+    console.log('with water mode:', this.waterMode);
+    console.log('at week:', week);
+
     const key = `${this.plantType}-${this.lightMode}-week${week}`;
     console.log('Loading texture key:', key, 'from', config.image);
 

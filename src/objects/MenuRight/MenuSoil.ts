@@ -29,25 +29,25 @@ export default class SoilMenu extends Phaser.GameObjects.Container {
       { key: TextureKeys.OrganicSoil, type: SoilType.OrganicSoil, label: 'Đất hữu cơ' }
     ]
 
-    soils.forEach((plant) => {
-      const soil = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.17).setInteractive()
-      soil.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-        this.startDragLeaf(plant.key, plant.type, pointer)
+    soils.forEach((soil) => {
+      const soilObj = scene.add.image(0, 0, soil.key).setOrigin(0.5).setScale(0.17).setInteractive()
+      soilObj.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        this.startDragSoil(soil.key, soil.type, pointer)
       })
 
       const label = scene.add
-        .text(0, 45, plant.label, {
+        .text(0, 45, soil.label, {
           fontSize: '14px',
           color: '#fff',
           fontFamily: FontKeys.TahomaFamily
         })
         .setOrigin(0.5, 0)
 
-      const item = scene.add.container(0, 60, [soil, label])
+      const item = scene.add.container(0, 60, [soilObj, label])
       this.add(item)
 
       this.itemContainers.push(item)
-      this.soilIcons.push(soil)
+      this.soilIcons.push(soilObj)
     })
 
     this.layout()
@@ -63,19 +63,19 @@ export default class SoilMenu extends Phaser.GameObjects.Container {
     this.layout()
   }
 
-  private startDragLeaf(textureKey: string, plantType: string, pointer: Phaser.Input.Pointer) {
+  private startDragSoil(textureKey: string, soilType: string, pointer: Phaser.Input.Pointer) {
     const scene = this.scene
-    const leaf = scene.add.image(pointer.x, pointer.y, textureKey).setOrigin(0.5).setScale(0.12).setDepth(1000)
+    const soil = scene.add.image(pointer.x, pointer.y, textureKey).setOrigin(0.5).setScale(0.12).setDepth(1000)
 
     const moveHandler = (p: Phaser.Input.Pointer) => {
-      leaf.setPosition(p.x, p.y)
+      soil.setPosition(p.x, p.y)
     }
     scene.input.on('pointermove', moveHandler)
 
     const upHandler = () => {
       scene.input.off('pointermove', moveHandler)
       scene.input.off('pointerup', upHandler)
-      this.emit(EventKeys.LeafDrag, { leaf, plantType })
+      this.emit(EventKeys.SoilDrag, { soil, soilType })
     }
     scene.input.once('pointerup', upHandler)
   }
