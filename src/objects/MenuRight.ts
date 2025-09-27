@@ -3,17 +3,20 @@ import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
 
 import Panel from './Panel'
+import DecorLine from './DecorLine'
+import PotMenu from './MenuPot'
+import SoilMenu from './MenuSoil'
 import PlantMenu from './MenuPlant'
 import LightMenu from './MenuLight'
 
 export default class RightMenu extends Phaser.GameObjects.Container {
+  private potMenu!: PotMenu
+  private soilMenu!: SoilMenu
   private plantMenu!: PlantMenu
   private lightMenu!: LightMenu
   private bg!: Panel
 
-  // offset menu con
-  private readonly plantMenuOffset = { x: 10, y: 10 }
-  private readonly lightMenuOffset = { x: 10, y: 140 }
+  private readonly contentPadding = 10
 
   constructor(
     scene: Phaser.Scene,
@@ -23,25 +26,46 @@ export default class RightMenu extends Phaser.GameObjects.Container {
   ) {
     const marginRight = 20
     const marginTop = 50
+    const decorLineHeight = 4
+    const decorLineColor = 0x0639c4ff
+
     super(scene, screenWidth - 300 - marginRight, marginTop)
 
-    // Panel nền (chiều cao sẽ tính sau bằng updateHeight)
-    this.bg = new Panel(scene, 0, 0, 300, 500, 15)
+    // Panel nền
+    this.bg = new Panel(scene, 0, 0, 300, 100, 15)
     this.add(this.bg)
 
-    // Menu plant
-    this.plantMenu = new PlantMenu(scene, this.plantMenuOffset.x, this.plantMenuOffset.y)
-    this.add(this.plantMenu)
-    this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data));
+    const contentWidth = this.getContentWidth()
 
-    // Menu light
-    this.lightMenu = new LightMenu(scene, this.lightMenuOffset.x, this.lightMenuOffset.y, defaultLightMode)
-    this.add(this.lightMenu)
-    this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode));
+    // Tạo các menu + line xen kẽ
+    this.potMenu = new PotMenu(scene, 0, 0, contentWidth)
+    const line1 = new DecorLine(scene, contentWidth, decorLineHeight, decorLineColor)
+    this.soilMenu = new SoilMenu(scene, 0, 0, contentWidth)
+    const line2 = new DecorLine(scene, contentWidth, decorLineHeight, decorLineColor)
+    this.plantMenu = new PlantMenu(scene, 0, 0, contentWidth)
+    const line3 = new DecorLine(scene, contentWidth, decorLineHeight, decorLineColor)
+    this.lightMenu = new LightMenu(scene, 0, 0, defaultLightMode, contentWidth, 20)
+
+    // Relay events
+    this.potMenu.on(EventKeys.PotDrag, (data) => this.emit(EventKeys.PotDrag, data))
+    this.soilMenu.on(EventKeys.SoilDrag, (data) => this.emit(EventKeys.SoilDrag, data))
+    this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data))
+    this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode))
+
+    // Add tất cả vào container chính
+    this.add([
+      this.potMenu,
+      line1,
+      this.soilMenu,
+      line2,
+      this.plantMenu,
+      line3,
+      this.lightMenu,
+    ])
 
     scene.add.existing(this)
 
-    // Tính lại chiều cao panel theo menu con
+    this.layoutSections()
     this.updateHeight()
 
     // listen global enable/disable
@@ -49,28 +73,71 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     scene.events.on(EventKeys.EnableItems, () => this.setEnabled(true))
   }
 
-  /** Enable/disable cả PlantMenu và LightMenu */
+  /** Lấy contentWidth (panelWidth - padding*2) */
+  private getContentWidth(): number {
+    return this.bg.getPanelWidth() - this.contentPadding * 2
+  }
+
+  /** Auto-stack menu + line theo chiều dọc */
+  private layoutSections() {
+    const sections = this.list.filter((c) => c !== this.bg)
+
+    let currentY = 20
+    const offsetX = this.contentPadding
+    const gap = 30
+
+    sections.forEach((item: any) => {
+      item.setPosition(offsetX, currentY)
+      const bounds = item.getBounds()
+      currentY += bounds.height + gap
+    })
+  }
+
   public setEnabled(enabled: boolean) {
+    this.potMenu.setEnabled(enabled)
+    this.soilMenu.setEnabled(enabled)
     this.plantMenu.setEnabled(enabled)
     this.lightMenu.setEnabled(enabled)
   }
 
-  /** Resize menu khi màn hình thay đổi */
+  /** Resize khi màn hình thay đổi */
   public resize(screenWidth: number, screenHeight: number) {
     const marginRight = 20
     const marginTop = 50
+
     this.setPosition(screenWidth - this.bg.getPanelWidth() - marginRight, marginTop)
 
-    // cập nhật lại chiều cao panel dựa vào menu con
+    const newContentWidth = this.getContentWidth()
+
+    // resize menu con
+    this.potMenu.resize?.(newContentWidth)
+    this.soilMenu.resize?.(newContentWidth)
+    this.plantMenu.resize?.(newContentWidth)
+    this.lightMenu.resize?.(newContentWidth)
+
+    // resize line
+    this.list.forEach((c) => {
+      if (c instanceof DecorLine) {
+        c.resize(newContentWidth)
+      }
+    })
+
+    this.layoutSections()
     this.updateHeight()
   }
 
-  /** Tính lại height của panel dựa trên tất cả children */
+  /** Tính lại height panel theo children */
   private updateHeight() {
-    const bounds = this.getBounds() // bao quanh tất cả children
-    const padding = 10
+    const childrenBounds = this.list
+      .filter((c) => c !== this.bg)
+      .map((c: any) => c.getBounds())
 
-    const newHeight = bounds.height + padding
+    if (childrenBounds.length === 0) return
+
+    const maxY = Math.max(...childrenBounds.map((b) => b.bottom))
+    const padding = 10
+    const newHeight = maxY + padding
+
     this.bg.resize(this.bg.getPanelWidth(), newHeight)
   }
 }

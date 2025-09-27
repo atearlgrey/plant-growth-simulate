@@ -26,11 +26,23 @@ enum TextureKeys {
     Table = 'table',
     PlantPot = 'plant-pot',
 
+    DefaultMorningGloryLeaf = 'default-morning-glory-leaf',
+    DefaultLettuceLeaf = 'default-lettuce-leaf',
+
+    // soil icons
+    GardenSoil = 'garden-soil',
+    SandySoil = 'sandy-soil',
+    OrganicSoil = 'organic-soil',
+
+    // pot icons
+    SmallPot = 'small-pot',
+    MediumPot = 'medium-pot',
+    LargePot = 'large-pot',
+
+    // leaf icons
     MorningGloryLeaf = 'morning-glory-leaf',
     LettuceLeaf = 'lettuce-leaf',
 
-    DefaultMorningGloryLeaf = 'default-morning-glory-leaf',
-    DefaultLettuceLeaf = 'default-lettuce-leaf',
 
     // plant
     MorningGlorySunWeek0 = 'morning-glory-sun-week0',
