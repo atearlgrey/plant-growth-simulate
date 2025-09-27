@@ -293,8 +293,12 @@ export default class PlantScene extends Phaser.Scene {
         returnTo: this.scene.key,
         size: 'sm',
         bullets: [
-          'Xu hướng chung: Cả hai loài đều tăng dần số lá và chiều cao qua các tuần (0 → 4).',
-          'Tác động của chế độ ánh sáng có mẫu hình nhất quán cho cả hai loài.'
+          'Ánh sáng tự nhiên phù hợp với rau muống; ánh sáng mạnh & ổn định thì ra nhiều lá, tán dày.',
+          'Ánh sáng tự nhiên với rau cải (lettuce) cho nhiều lá nếu nhiệt độ mát; nắng gắt + nóng dễ làm lá kém chất lượng.',
+          'LED phù hợp cả hai loài khi cần ổn định, dễ kiểm soát.',
+          'Ánh sáng hỗn hợp (natural + LED) thường cho cây cao/vươn hơn nhưng ít lá hơn hai chế độ trên.',
+          'Rau muống phản ứng mạnh với ánh sáng dồi dào → muốn nhiều lá thì ưu tiên tự nhiên/LED đủ mạnh',
+          'Rau cải cần ánh sáng vừa phải + nhiệt mát để lá đều, dày; nếu nóng quá dù sáng đủ vẫn giảm chất lượng lá.'
         ],
         modes: [
           { key:'sun',   label:'Tự nhiên', leavesW4:'20 lá', heightW4:'20 cm', note:'Nhiều lá nhất' },
