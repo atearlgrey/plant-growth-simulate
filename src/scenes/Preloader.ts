@@ -40,6 +40,9 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.DefaultMorningGloryLeaf, 'assets/morning-glory-leaf.png');
         this.load.image(TextureKeys.DefaultLettuceLeaf, 'assets/lettuce-leaf.png');
 
+        this.load.image(TextureKeys.BucketNoWater, 'assets/water1.png');
+        this.load.image(TextureKeys.BucketWater, 'assets/water2.png');
+        
         // soil icons
         this.load.image(TextureKeys.GardenSoil, 'assets/right-menu/soil/garden-soil.png');
         this.load.image(TextureKeys.SandySoil, 'assets/right-menu/soil/sandy-soil.png');

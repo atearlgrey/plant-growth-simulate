@@ -19,6 +19,7 @@ enum EventKeys {
   LeafDrag = 'leaf-drag',
   PlantDrop = 'plant-drop',
   LightChange = 'light-change',
+  WaterChange = 'water-change',
 
   EnableItems = 'enable-items',
   DisableItems = 'disable-items',

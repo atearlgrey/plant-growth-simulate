@@ -2,27 +2,31 @@ import Phaser from 'phaser'
 
 import EventKeys from 'consts/EventKeys'
 
-import Panel from './Panel'
-import DecorLine from './DecorLine'
+import Panel from '../Panel'
+import DecorLine from '../DecorLine'
 import PotMenu from './MenuPot'
 import SoilMenu from './MenuSoil'
 import PlantMenu from './MenuPlant'
 import LightMenu from './MenuLight'
+import WaterMenu from './MenuWater'
 
 export default class RightMenu extends Phaser.GameObjects.Container {
   private potMenu!: PotMenu
   private soilMenu!: SoilMenu
   private plantMenu!: PlantMenu
   private lightMenu!: LightMenu
+  private waterMenu!: WaterMenu
   private bg!: Panel
 
+  // offset menu con
   private readonly contentPadding = 10
 
   constructor(
     scene: Phaser.Scene,
     screenWidth: number,
     screenHeight: number,
-    defaultLightMode: string | undefined = undefined
+    defaultLightMode: string | undefined = undefined,
+    defaultWaterMode: string | undefined = undefined,
   ) {
     const marginRight = 20
     const marginTop = 50
@@ -45,12 +49,15 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     this.plantMenu = new PlantMenu(scene, 0, 0, contentWidth)
     const line3 = new DecorLine(scene, contentWidth, decorLineHeight, decorLineColor)
     this.lightMenu = new LightMenu(scene, 0, 0, defaultLightMode, contentWidth, 20)
+    const line4 = new DecorLine(scene, contentWidth, decorLineHeight, decorLineColor)
+    this.waterMenu = new WaterMenu(scene, 0, 0, defaultWaterMode, contentWidth, 20)
 
     // Relay events
     this.potMenu.on(EventKeys.PotDrag, (data) => this.emit(EventKeys.PotDrag, data))
     this.soilMenu.on(EventKeys.SoilDrag, (data) => this.emit(EventKeys.SoilDrag, data))
     this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data))
     this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode))
+    this.waterMenu.on(EventKeys.WaterChange, (mode) => this.emit(EventKeys.WaterChange, mode));
 
     // Add tất cả vào container chính
     this.add([
@@ -61,6 +68,8 @@ export default class RightMenu extends Phaser.GameObjects.Container {
       this.plantMenu,
       line3,
       this.lightMenu,
+      line4,
+      this.waterMenu,
     ])
 
     scene.add.existing(this)
@@ -98,6 +107,7 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     this.soilMenu.setEnabled(enabled)
     this.plantMenu.setEnabled(enabled)
     this.lightMenu.setEnabled(enabled)
+    this.waterMenu.setEnabled(enabled)
   }
 
   /** Resize khi màn hình thay đổi */
@@ -114,6 +124,7 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     this.soilMenu.resize?.(newContentWidth)
     this.plantMenu.resize?.(newContentWidth)
     this.lightMenu.resize?.(newContentWidth)
+    this.waterMenu.resize?.(newContentWidth)
 
     // resize line
     this.list.forEach((c) => {

@@ -9,13 +9,15 @@ import Window from 'objects/Window';
 import Lamp from 'objects/Lamp';
 
 import LeftPanel from 'objects/MenuLeft';
-import RightPanel from 'objects/MenuRight';
+import RightPanel from 'objects/MenuRight/MenuRight';
 import TimelineSlider from 'objects/TimelineSlider';
 import Table from 'objects/Table';
 import Pot from 'objects/PlantPot';
 import Plant from 'objects/Plant';
 import StateKeys from 'consts/AppStates';
 import VoiceKeys from 'consts/VoiceKeys';
+import WaterType from 'consts/WaterType';
+import WaterBucket from 'objects/WaterBucket';
 
 export default class PlantScene extends Phaser.Scene {
   private plant!: Plant;
@@ -25,6 +27,7 @@ export default class PlantScene extends Phaser.Scene {
   private maxWeek: number = 4;
   private plantType: string = 'lettuce';
   private lightMode: LightType = LightType.Sun;
+  private waterMode: WaterType = WaterType.One;
   private volume: number = 0.3;
 
   private background!: Phaser.GameObjects.Image;
@@ -35,6 +38,7 @@ export default class PlantScene extends Phaser.Scene {
   private ledLight?: Phaser.GameObjects.Graphics;
 
   private timer!: Phaser.Time.TimerEvent;
+  private timerCount = 0;
   private bgm!: Phaser.Sound.BaseSound;
   private buttonSelectVoice!: Phaser.Sound.BaseSound;
   private startVoice!: Phaser.Sound.BaseSound;
@@ -46,6 +50,7 @@ export default class PlantScene extends Phaser.Scene {
   private rightMenu!: RightPanel;
   private table!: Table;
   private pot!: Pot;
+  private waterBucket!: WaterBucket;
 
   constructor() {
     super(SceneKeys.Plant);
@@ -123,6 +128,13 @@ export default class PlantScene extends Phaser.Scene {
       this.pot.setPosition(width / 2, height / 2);
     }
 
+    // WaterBucket
+    if (!this.waterBucket) {
+      this.waterBucket = new WaterBucket(this, 0, 0);
+    } else {
+      this.waterBucket.setPosition(0, 0);
+    }
+
     // Left menu
     if (!this.leftMenu) {
       this.leftMenu = new LeftPanel(this, 100, 100);
@@ -132,7 +144,7 @@ export default class PlantScene extends Phaser.Scene {
 
     // Right menu
     if (!this.rightMenu) {
-      this.rightMenu = new RightPanel(this, width, height, this.lightMode);
+      this.rightMenu = new RightPanel(this, width, height, this.lightMode, this.waterMode);
     } else {
       this.rightMenu.resize(width, height);
     }
@@ -237,7 +249,7 @@ export default class PlantScene extends Phaser.Scene {
       this.resetPlant(false);
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
-      this.timer.paused = false;
+      this.startTimer();
       this.playSelectVoice();
       this.playStartVoice();
     });
@@ -246,7 +258,7 @@ export default class PlantScene extends Phaser.Scene {
       console.log('⏯ Resume');
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Running);
-      this.timer.paused = false;
+      this.startTimer();
       this.playSelectVoice();
     });
 
@@ -254,7 +266,7 @@ export default class PlantScene extends Phaser.Scene {
       console.log('⏸ Stop');
       this.events.emit(EventKeys.DisableItems);
       this.leftMenu.setCurrentState(StateKeys.Paused);
-      this.timer.paused = true;
+      this.stopTimer();
       this.playSelectVoice();
     });
 
@@ -263,7 +275,7 @@ export default class PlantScene extends Phaser.Scene {
       this.resetPlant(false);
       this.events.emit(EventKeys.EnableItems);
       this.leftMenu.setCurrentState(StateKeys.Initial);
-      this.timer.paused = true;
+      this.stopTimer();
       this.playSelectVoice();
     });
 
@@ -361,6 +373,12 @@ export default class PlantScene extends Phaser.Scene {
       if (this.plant) { this.plant.setLightMode(mode); }
     });
 
+    this.rightMenu.on(EventKeys.WaterChange, (mode: WaterType) => {
+      console.log('💡 Water mode:', mode);
+      this.waterMode = mode;
+      this.resetTimer();
+    });
+
     // 🎯 Slider events
     this.slider.onWeekChanged((week) => {
       this.currentWeek = week;
@@ -377,27 +395,63 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   private settingTimer() {
+    // 6s là 1 tuần
+    const weekTime = 10000;
+    const order: WaterType[] = [WaterType.One, WaterType.Two, WaterType.Three];
+
+    // tần suất tưới nước
+    const frequency = order.indexOf(this.waterMode) + 1;
+
+    // Số giây để timer nhảy 1 lần
+    const delay = weekTime / (frequency + 1);
+
+    // tạo timer
     this.timer = this.time.addEvent({
-      delay: 5000,
+      delay: delay,
       loop: true,
       paused: true
     });
 
     this.timer.callback = () => {
-      if (this.currentWeek < this.maxWeek - 1) {
-        this.currentWeek++;
-        this.events.emit(EventKeys.SetWeek, this.currentWeek);
+      this.timerCount++;
+
+      // Đến điểm cây lớn
+      if (((this.timerCount * delay) % weekTime) === 0 )
+      {
+        if (this.currentWeek < this.maxWeek - 1) {
+          this.currentWeek++;
+          this.events.emit(EventKeys.SetWeek, this.currentWeek);
+        }
+        else if (this.currentWeek = this.maxWeek - 1) {
+          this.currentWeek++;
+          this.events.emit(EventKeys.SetWeek, this.currentWeek);
+          this.leftMenu.emit(EventKeys.Complete);
+          this.stopTimer();
+        } else {
+          this.leftMenu.emit(EventKeys.Complete);
+          this.stopTimer();
+        }
       }
-      else if (this.currentWeek = this.maxWeek - 1) {
-        this.currentWeek++;
-        this.events.emit(EventKeys.SetWeek, this.currentWeek);
-        this.leftMenu.emit(EventKeys.Complete);
-        this.timer.paused = true;
-      } else {
-        this.leftMenu.emit(EventKeys.Complete);
-        this.timer.paused = true;
+      // Đến điểm tưới nước
+      else {
+        console.log("Tưới nước lần" + this.timerCount);
+        this.waterBucket.wateringPlants(this.plant?.x + 500, this.plant?.y - 150, this.plant?.x + 100, this.plant?.y - 100);
       }
     };
+  }
+
+  private stopTimer() {
+    this.timer.paused = true;
+    this.timerCount = 0;
+  }
+
+  private startTimer() {
+    this.timer.paused = false;
+  }
+
+  private resetTimer() {
+    if (this.timer) this.timer.destroy();
+    this.settingTimer();
   }
 
   private setupVoice() {
@@ -426,35 +480,35 @@ export default class PlantScene extends Phaser.Scene {
     this.growVoice = this.sound.add(VoiceKeys.Grow, { mute: false, volume: 0.5 });
   }
 
-  playSelectVoice() {
+  private playSelectVoice() {
     if (!this.buttonSelectVoice) {
       this.buttonSelectVoice = this.sound.add(VoiceKeys.ButtonSelect, { mute: false, volume: 0.5 });
     }
     this.buttonSelectVoice.play()
   }
 
-  playStartVoice() {
+  private playStartVoice() {
     if (!this.startVoice) {
       this.startVoice = this.sound.add(VoiceKeys.Start, { mute: false, volume: 0.5 });
     }
     this.startVoice.play()
   }
 
-  playCompleteVoice() {
+  private playCompleteVoice() {
     if (!this.completeVoice) {
       this.completeVoice = this.sound.add(VoiceKeys.Complete, { mute: false, volume: 0.5 });
     }
     this.completeVoice.play()
   }
 
-  playYeahVoice() {
+  private playYeahVoice() {
     if (!this.plantVoice) {
       this.plantVoice = this.sound.add(VoiceKeys.Plant, { mute: false, volume: 0.5 });
     }
     this.plantVoice.play()
   }
 
-  playGrowVoice() {
+  private playGrowVoice() {
     if (!this.growVoice) {
       this.growVoice = this.sound.add(VoiceKeys.Plant, { mute: false, volume: 0.5 });
     }
