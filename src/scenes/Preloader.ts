@@ -39,6 +39,9 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.DefaultMorningGloryLeaf, 'assets/morning-glory-leaf.png');
         this.load.image(TextureKeys.DefaultLettuceLeaf, 'assets/lettuce-leaf.png');
 
+        this.load.image(TextureKeys.BucketNoWater, 'assets/water1.png');
+        this.load.image(TextureKeys.BucketWater, 'assets/water2.png');
+
         // voice
         this.load.audio(VoiceKeys.BGM, 'assets/voice/bgm/bgm.mp3');
         this.load.audio(VoiceKeys.ButtonSelect, 'assets/voice/se/select.mp3');

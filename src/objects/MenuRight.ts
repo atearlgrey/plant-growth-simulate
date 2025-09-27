@@ -5,21 +5,25 @@ import EventKeys from 'consts/EventKeys'
 import Panel from './Panel'
 import PlantMenu from './MenuPlant'
 import LightMenu from './MenuLight'
+import WaterMenu from './MenuWater'
 
 export default class RightMenu extends Phaser.GameObjects.Container {
   private plantMenu!: PlantMenu
   private lightMenu!: LightMenu
+  private waterMenu!: WaterMenu
   private bg!: Panel
 
   // offset menu con
   private readonly plantMenuOffset = { x: 10, y: 10 }
   private readonly lightMenuOffset = { x: 10, y: 140 }
+  private readonly waterMenuOffset = { x: 10, y: 280 }
 
   constructor(
     scene: Phaser.Scene,
     screenWidth: number,
     screenHeight: number,
-    defaultLightMode: string | undefined = undefined
+    defaultLightMode: string | undefined = undefined,
+    defaultWaterMode: string | undefined = undefined,
   ) {
     const marginRight = 20
     const marginTop = 50
@@ -38,6 +42,11 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     this.lightMenu = new LightMenu(scene, this.lightMenuOffset.x, this.lightMenuOffset.y, defaultLightMode)
     this.add(this.lightMenu)
     this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode));
+
+    // Menu water
+    this.waterMenu = new WaterMenu(scene, this.waterMenuOffset.x, this.waterMenuOffset.y, defaultWaterMode)
+    this.add(this.waterMenu)
+    this.waterMenu.on(EventKeys.WaterChange, (mode) => this.emit(EventKeys.WaterChange, mode));
 
     scene.add.existing(this)
 

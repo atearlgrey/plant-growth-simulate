@@ -32,6 +32,9 @@ enum TextureKeys {
     DefaultMorningGloryLeaf = 'default-morning-glory-leaf',
     DefaultLettuceLeaf = 'default-lettuce-leaf',
 
+    BucketNoWater = 'bucket-no-water',
+    BucketWater = 'bucket-water',
+
     // plant
     MorningGlorySunWeek0 = 'morning-glory-sun-week0',
     MorningGlorySunWeek1 = 'morning-glory-sun-week1',
