@@ -3,97 +3,113 @@ import EventKeys from 'consts/EventKeys'
 import FontKeys from 'consts/FontKeys'
 
 interface RadioButton {
+  container: Phaser.GameObjects.Container
   g: Phaser.GameObjects.Graphics
+  text: Phaser.GameObjects.Text
   value: string
 }
 
 export default class LightMenu extends Phaser.GameObjects.Container {
-  private lightButtons: { [label: string]: RadioButton } = {}
+  private lightButtons: RadioButton[] = []
   private currentMode: string | undefined
+  private panelWidth: number
+  private btnSize: number
 
-  constructor(scene: Phaser.Scene, x: number, y: number, defaultMode: string | undefined = undefined) {
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    defaultMode: string | undefined = undefined,
+    panelWidth: number = 250,
+    btnSize: number = 20
+  ) {
     super(scene, x, y)
+    this.panelWidth = panelWidth
+    this.btnSize = btnSize
 
-    this.add(
-      scene.add.text(0, 0, 'Thiết lập ánh sáng', {
-        fontSize: '20px',
-        color: '#fff',
-        fontStyle: FontKeys.BoldType,
-        fontFamily: FontKeys.TahomaFamily,
-      })
-    )
+    // Title
+    const title = scene.add.text(0, 0, 'Thiết lập ánh sáng', {
+      fontSize: '20px',
+      color: '#fff',
+      fontStyle: FontKeys.BoldType,
+      fontFamily: FontKeys.TahomaFamily,
+    })
+    this.add(title)
 
-    // label (hiển thị), value (logic)
-    this.createRadioButton(0, 35, 'Tự nhiên', 'sun')
-    this.createRadioButton(0, 65, 'Đèn LED', 'led')
-    this.createRadioButton(0, 95, 'Hỗn hợp', 'mixed')
+    // tạo các options
+    this.createRadioButton('Tự nhiên', 'sun')
+    this.createRadioButton('Đèn LED', 'led')
+    this.createRadioButton('Hỗn hợp', 'mixed')
 
+    this.layout()
     scene.add.existing(this)
 
     // chọn mặc định khi load
     this.selectLight(defaultMode)
-
-    // đường kẻ trang trí
-    const graphics2 = this.scene.add.graphics()
-    graphics2.lineStyle(4, 0x0639c4ff, 1)
-    graphics2.beginPath()
-    graphics2.moveTo(1625, y + 35)
-    graphics2.lineTo(1875, y + 35)
-    graphics2.strokePath()
-
-    graphics2.lineStyle(4, 0x0639c4ff, 1)
-    graphics2.beginPath()
-    graphics2.moveTo(1625, y + 180)
-    graphics2.lineTo(1875, y + 180)
-    graphics2.strokePath()
   }
 
-  private createRadioButton(x: number, y: number, label: string, value: string) {
+  private createRadioButton(label: string, value: string) {
     const g = this.scene.add.graphics()
-    g.setInteractive(new Phaser.Geom.Rectangle(x, y, 15, 15), Phaser.Geom.Rectangle.Contains)
+    g.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.btnSize, this.btnSize), Phaser.Geom.Rectangle.Contains)
 
-    // vẽ ban đầu
-    g.fillStyle(0x0077cc, 1)
-    g.fillRoundedRect(x, y, 15, 15, 8)
+    const text = this.scene.add
+      .text(this.btnSize + 10, this.btnSize / 2, label, {
+        fontSize: '14px',
+        color: '#fff',
+        fontFamily: FontKeys.TahomaFamily,
+      })
+      .setOrigin(0, 0.5) // luôn căn giữa theo Y
 
-    const text = this.scene.add.text(x + 30, y + 6, label, {
-      fontSize: '14px',
-      color: '#fff',
-      fontFamily: FontKeys.TahomaFamily,
-    }).setOrigin(0, 0.5)
+    const container = this.scene.add.container(0, 0, [g, text])
+    this.add(container)
 
-    this.add([g, text])
-    this.lightButtons[label] = { g, value }
+    this.lightButtons.push({ container, g, text, value })
 
     g.on('pointerdown', () => {
       this.selectLight(value)
     })
   }
 
+  /** Sắp xếp radio button dọc, tự động */
+  private layout() {
+    let currentY = 40 // cách title
+    const gap = 30
+    const offsetX = 0
+
+    this.lightButtons.forEach(({ container, g }) => {
+      container.setPosition(offsetX, currentY)
+
+      // reset hình radio
+      g.clear()
+      g.fillStyle(0x0077cc, 1)
+      g.fillRoundedRect(0, 0, this.btnSize, this.btnSize, this.btnSize / 4)
+
+      currentY += gap
+    })
+  }
+
   private selectLight(mode: string | undefined) {
     this.currentMode = mode
 
-    Object.values(this.lightButtons).forEach(({ g, value }) => {
+    this.lightButtons.forEach(({ g, value }) => {
       g.clear()
       g.fillStyle(value === mode ? 0xffcc00 : 0x0077cc, 1)
-      g.fillRoundedRect(g.input?.hitArea.x ?? 0, g.input?.hitArea.y ?? 0, 15, 15, 8)
+      g.fillRoundedRect(0, 0, this.btnSize, this.btnSize, this.btnSize / 4)
     })
 
     this.emit(EventKeys.LightChange, mode)
   }
 
-  /** Cho phép đổi mode từ bên ngoài bằng code */
   public setLight(mode: string) {
     this.selectLight(mode)
   }
 
-  /** Lấy mode hiện tại */
   public getLight(): string | undefined {
     return this.currentMode
   }
 
   public setEnabled(enabled: boolean) {
-    Object.values(this.lightButtons).forEach(({ g }) => {
+    this.lightButtons.forEach(({ g }) => {
       if (enabled) {
         g.setInteractive()
         g.setAlpha(1)
@@ -102,5 +118,10 @@ export default class LightMenu extends Phaser.GameObjects.Container {
         g.setAlpha(0.5)
       }
     })
+  }
+
+  public resize(panelWidth: number) {
+    this.panelWidth = panelWidth
+    this.layout()
   }
 }

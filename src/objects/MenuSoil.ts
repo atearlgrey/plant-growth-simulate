@@ -1,13 +1,13 @@
 import Phaser from 'phaser'
-import { arrangeItemsCenter, arrangeItemsLeft } from 'helpers/GraphicItemArrange'
+import { arrangeItemsCenter } from 'helpers/GraphicItemArrange'
 
 import EventKeys from 'consts/EventKeys'
 import TextureKeys from 'consts/TextureKeys'
-import PlantType from 'consts/PlantType'
+import SoilType from 'consts/SoilType'
 import FontKeys from 'consts/FontKeys'
 
-export default class PlantMenu extends Phaser.GameObjects.Container {
-  private leafIcons: Phaser.GameObjects.Image[] = []
+export default class SoilMenu extends Phaser.GameObjects.Container {
+  private soilIcons: Phaser.GameObjects.Image[] = []
   private itemContainers: Phaser.GameObjects.Container[] = []
   private panelWidth: number
 
@@ -15,8 +15,7 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
     super(scene, x, y)
     this.panelWidth = panelWidth
 
-    // Title
-    const title = scene.add.text(0, 0, 'Chọn cây', {
+    const title = scene.add.text(0, 0, 'Chọn loại đất', {
       fontSize: '20px',
       color: '#fff',
       fontStyle: FontKeys.BoldType,
@@ -24,19 +23,18 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
     })
     this.add(title)
 
-    const plants = [
-      { key: TextureKeys.MorningGloryLeaf, type: PlantType.MorningGlory, label: 'Rau muống' },
-      { key: TextureKeys.LettuceLeaf, type: PlantType.Lettuce, label: 'Rau cải' }
+    const soils = [
+      { key: TextureKeys.GardenSoil, type: SoilType.GardenSoil, label: 'Đất vườn' },
+      { key: TextureKeys.SandySoil, type: SoilType.SandySoil, label: 'Đất cát' },
+      { key: TextureKeys.OrganicSoil, type: SoilType.OrganicSoil, label: 'Đất hữu cơ' }
     ]
 
-    plants.forEach((plant) => {
-      // icon
-      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.12).setInteractive()
-      leaf.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+    soils.forEach((plant) => {
+      const soil = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.17).setInteractive()
+      soil.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
         this.startDragLeaf(plant.key, plant.type, pointer)
       })
 
-      // text ngay dưới icon
       const label = scene.add
         .text(0, 45, plant.label, {
           fontSize: '14px',
@@ -45,24 +43,21 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
         })
         .setOrigin(0.5, 0)
 
-      // gộp vào container
-      const item = scene.add.container(0, 60, [leaf, label])
+      const item = scene.add.container(0, 60, [soil, label])
       this.add(item)
 
       this.itemContainers.push(item)
-      this.leafIcons.push(leaf)
+      this.soilIcons.push(soil)
     })
 
     this.layout()
     scene.add.existing(this)
   }
 
-  /** Sắp xếp icon + text căn giữa panelWidth */
   private layout() {
-    arrangeItemsLeft(this.itemContainers, this.panelWidth, 60, 30)
+    arrangeItemsCenter(this.itemContainers, this.panelWidth, 60, 20)
   }
 
-  /** Resize khi panel thay đổi */
   public resize(panelWidth: number) {
     this.panelWidth = panelWidth
     this.layout()
@@ -85,9 +80,8 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
     scene.input.once('pointerup', upHandler)
   }
 
-  /** Enable/disable toàn bộ leaf icons */
   public setEnabled(enabled: boolean) {
-    this.leafIcons.forEach((icon) => {
+    this.soilIcons.forEach((icon) => {
       if (enabled) {
         icon.setInteractive()
         icon.setAlpha(1)
