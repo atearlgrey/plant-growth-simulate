@@ -220,7 +220,7 @@ function formatCell(height?: number, leaves?: number) {
 
 function prettyPlant(p: string) {
     // bạn có thể đổi 'lettuce' -> 'Rau cải' nếu muốn
-    const map: Record<string,string> = { 'lettuce':'Rau riếp', 'morning-glory':'Rau muống' };
+    const map: Record<string,string> = { 'lettuce':'Rau cải', 'morning-glory':'Rau muống' };
     return map[p] ?? p;
 }
 function prettyMode(m: string) {
@@ -238,9 +238,6 @@ function normalizePlantOrNull(plant?: string): string | null {
         'rau muống': 'morning-glory',
         'rau muong': 'morning-glory',
         'raumuong': 'morning-glory',
-        'rau riếp': 'lettuce',
-        'rau riep': 'lettuce',
-        'rauriep': 'lettuce',
         'rau cải': 'lettuce',
         'rau cai': 'lettuce',
         'raucai': 'lettuce'
