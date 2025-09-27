@@ -7,27 +7,42 @@ import PlantMenu from './MenuPlant'
 import LightMenu from './MenuLight'
 
 export default class RightMenu extends Phaser.GameObjects.Container {
-  private plantMenu!: PlantMenu;
-  private lightMenu!: LightMenu;
+  private plantMenu!: PlantMenu
+  private lightMenu!: LightMenu
+  private bg!: Panel
 
-  constructor(scene: Phaser.Scene, x: number, y: number, defaultLightMode: string | undefined = undefined) {
-    super(scene, x, y)
+  // offset menu con
+  private readonly plantMenuOffset = { x: 10, y: 10 }
+  private readonly lightMenuOffset = { x: 10, y: 140 }
 
-    // Panel nền
-    const bg = new Panel(scene, 0, 0, 300, 500, 15);
-    this.add(bg);
+  constructor(
+    scene: Phaser.Scene,
+    screenWidth: number,
+    screenHeight: number,
+    defaultLightMode: string | undefined = undefined
+  ) {
+    const marginRight = 20
+    const marginTop = 50
+    super(scene, screenWidth - 300 - marginRight, marginTop)
+
+    // Panel nền (chiều cao sẽ tính sau bằng updateHeight)
+    this.bg = new Panel(scene, 0, 0, 300, 500, 15)
+    this.add(this.bg)
 
     // Menu plant
-    this.plantMenu = new PlantMenu(scene, 10, 10);
-    this.add(this.plantMenu);
+    this.plantMenu = new PlantMenu(scene, this.plantMenuOffset.x, this.plantMenuOffset.y)
+    this.add(this.plantMenu)
     this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data));
 
     // Menu light
-    this.lightMenu = new LightMenu(scene, 10, 140, defaultLightMode);
-    this.add(this.lightMenu);
+    this.lightMenu = new LightMenu(scene, this.lightMenuOffset.x, this.lightMenuOffset.y, defaultLightMode)
+    this.add(this.lightMenu)
     this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode));
 
-    scene.add.existing(this);
+    scene.add.existing(this)
+
+    // Tính lại chiều cao panel theo menu con
+    this.updateHeight()
 
     // listen global enable/disable
     scene.events.on(EventKeys.DisableItems, () => this.setEnabled(false))
@@ -36,7 +51,26 @@ export default class RightMenu extends Phaser.GameObjects.Container {
 
   /** Enable/disable cả PlantMenu và LightMenu */
   public setEnabled(enabled: boolean) {
-    this.plantMenu.setEnabled(enabled);
-    this.lightMenu.setEnabled(enabled);
+    this.plantMenu.setEnabled(enabled)
+    this.lightMenu.setEnabled(enabled)
+  }
+
+  /** Resize menu khi màn hình thay đổi */
+  public resize(screenWidth: number, screenHeight: number) {
+    const marginRight = 20
+    const marginTop = 50
+    this.setPosition(screenWidth - this.bg.getPanelWidth() - marginRight, marginTop)
+
+    // cập nhật lại chiều cao panel dựa vào menu con
+    this.updateHeight()
+  }
+
+  /** Tính lại height của panel dựa trên tất cả children */
+  private updateHeight() {
+    const bounds = this.getBounds() // bao quanh tất cả children
+    const padding = 10
+
+    const newHeight = bounds.height + padding
+    this.bg.resize(this.bg.getPanelWidth(), newHeight)
   }
 }

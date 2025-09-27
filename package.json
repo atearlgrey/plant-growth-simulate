@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "A typescript template project for Phaser 3 using Parceljs",
   "scripts": {
+    "clean": "rimraf dist",
     "start": "parcel src/index.html -p 8000",
+    "copy-public": "copyfiles -u 1 public/**/* dist",
     "build": "parcel build src/index.html --dist-dir dist --public-url ./",
-    "build:prod": "npm run build && cp -r public/* dist/",
+    "build:prod": "npm run clean && npm run build && npm run copy-public",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },
@@ -20,10 +22,11 @@
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "eslint": "^9.36.0",
+    "copyfiles": "^2.4.1",
+    "eslint": "^6.8.0",
     "minimist": ">=1.2.2",
     "parcel": "^2.16.0",
-    "parcel-plugin-clean-easy": "^1.0.2",
-    "parcel-reporter-static-files-copy": "^1.5.3",
+    "rimraf": "^5.0.10",
     "typescript": "^3.8.3"
   },
   "dependencies": {

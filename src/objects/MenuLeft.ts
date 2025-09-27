@@ -9,10 +9,12 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
   private resetButton!: Phaser.GameObjects.Image
   private resultButton!: Phaser.GameObjects.Image
   private conclusionButton!: Phaser.GameObjects.Image
+  private zoomButton!: Phaser.GameObjects.Image
   private soundButton!: Phaser.GameObjects.Image
 
   private currentState: StateKeys = StateKeys.Initial
   private currentSoundOn: boolean = true
+  private currentZoomOn: boolean = false
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y)
@@ -42,10 +44,10 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     this.add([this.conclusionButton])
     this.conclusionButton.on('pointerdown', () => this.emit(EventKeys.Conclusion))
 
-    // === Complete ===
-    const completeButton = this.scene.add.image(0, 400, TextureKeys.ButtonComplete).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
-    this.add([completeButton])
-    completeButton.on('pointerdown', () => this.emit(EventKeys.Complete))
+    // === zoom ===
+    this.zoomButton = this.scene.add.image(0, 400, TextureKeys.ButtonUnZoom).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.zoomButton])
+    this.zoomButton.on('pointerdown', () => this.handleZoomButton())
 
     // === Complete ===
     this.soundButton = this.scene.add.image(0, 500, TextureKeys.ButtonSound).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
@@ -72,6 +74,19 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     } else if (this.currentState === AppStates.Complete) {
       this.setCurrentState(AppStates.Running)
       this.emit(EventKeys.Start)
+    }
+  }
+  
+  /** Xử lý toggle nút zoom */
+  private handleZoomButton() {
+    if (this.currentZoomOn === true) {
+      this.currentZoomOn = false;
+      this.zoomButton.setTexture(TextureKeys.ButtonUnZoom)
+      this.emit(EventKeys.UnZoom)
+    } else {
+      this.currentZoomOn = true;
+      this.zoomButton.setTexture(TextureKeys.ButtonZoom)
+      this.emit(EventKeys.Zoom)
     }
   }
 
