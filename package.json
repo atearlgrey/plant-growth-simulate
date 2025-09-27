@@ -7,7 +7,7 @@
     "start": "parcel src/index.html -p 8000",
     "copy-public": "copyfiles -u 1 public/**/* dist",
     "build": "parcel build src/index.html --dist-dir dist --public-url ./",
-    "build:prod": "npm run clean && npm run build && npm run copy-public",
+    "build:prod": "npm run build && cp -r public/* dist/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx"
   },

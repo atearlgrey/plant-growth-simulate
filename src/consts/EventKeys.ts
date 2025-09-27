@@ -14,6 +14,8 @@ enum EventKeys {
   UnMute = 'process-unmute',
 
   // UI control
+  PotDrag = 'pot-drag',
+  SoilDrag = 'soil-drag',
   LeafDrag = 'leaf-drag',
   PlantDrop = 'plant-drop',
   LightChange = 'light-change',

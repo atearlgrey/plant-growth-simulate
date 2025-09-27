@@ -11,6 +11,7 @@ type ResultData = {
     plant?: string;          // optional filter
     lightMode?: string;      // optional filter
     growthData?: GrowthData; // optional - truyền trực tiếp
+    size?: 'sm' | 'md' | 'lg'; // optional: khổ panel cố định (sẽ bị override bởi auto-height)
 };
 
 export default class ResultScene extends Phaser.Scene {
@@ -21,22 +22,21 @@ export default class ResultScene extends Phaser.Scene {
 
     preload() {
         if (!this.cache.json.exists('growthData')) {
-            this.load.json('growthData', './data/growth.json');
+            // thêm cache-buster nhẹ cho dev
+            this.load.json('growthData', `./data/growth.json?v=${Date.now()}`);
         }
     }
 
     create(data: ResultData) {
         this.returnTo = data.returnTo;
 
-        // Lấy data: ưu tiên param -> registry -> cache
+        // ===== lấy dữ liệu
         const gd = data.growthData
             ?? (this.registry.get('growthData') as GrowthData | undefined)
             ?? (this.cache.json.get('growthData') as GrowthData | undefined);
 
         if (!gd) {
             console.warn('[ResultScene] growthData NOT FOUND');
-        } else {
-            console.log('[ResultScene] growthData OK:', gd);
         }
 
         const { columns, rows } = pivotToTable(gd, {
@@ -44,28 +44,34 @@ export default class ResultScene extends Phaser.Scene {
             filterPlant: data.plant,
             filterMode: data.lightMode
         });
-        console.log('[ResultScene] filters=', data.plant, data.lightMode, 'rows=', rows.length);
 
-        // ===== vẽ popup
+        // ===== popup size — auto theo số dòng để tránh khoảng trống
         const { width, height } = this.scale;
-        // const panelW = Math.min(1100, width - 80);
-        // const panelH = Math.min(620,  height - 80);
-        const panelW = Math.min(900, Math.floor(width  * 0.70));
-        const panelH = Math.min(500, Math.floor(height * 0.60));
 
-        // overlay dịu mắt
+        const panelW = Math.min(820, Math.floor(width * 0.64)); // gọn ngang
+        const ROW_H = 44;        // cao 1 dòng
+        const HEADER_H = 44;     // cao header
+        const TITLE_H = 48;      // tiêu đề + top spacing
+        const PAD_TOP = 46;      // top padding tới bảng
+        const PAD_BOTTOM = 12;   // bottom padding
+
+        const rowsCount = Math.max(1, rows.length);
+        const desiredH = TITLE_H + PAD_TOP + HEADER_H + rowsCount * ROW_H + PAD_BOTTOM;
+        const panelH = Math.min(Math.max(320, desiredH), height - 80);
+
+        // ===== overlay
         this.add.rectangle(width/2, height/2, width, height, 0x0b1220, 0.40)
             .setInteractive()
             .on('pointerdown', () => this.close());
 
         const container = this.add.container(width/2, height/2);
 
-        // SHADOW (giả lập)
+        // shadow
         const shadow = this.add.graphics();
         shadow.fillStyle(0x000000, 0.20).fillRoundedRect(-panelW/2+6, -panelH/2+10, panelW, panelH, 18);
         container.add(shadow);
 
-        // PANEL
+        // panel
         const g = this.add.graphics();
         g.fillStyle(0xffffff, 1).fillRoundedRect(-panelW/2, -panelH/2, panelW, panelH, 18);
         g.lineStyle(1, 0xe5e7eb, 1).strokeRoundedRect(-panelW/2, -panelH/2, panelW, panelH, 18);
@@ -78,7 +84,7 @@ export default class ResultScene extends Phaser.Scene {
             ).setOrigin(0.5,0)
         );
 
-        // nút Close dễ bấm
+        // close
         const closeArea = this.add.rectangle(panelW/2 - 24, -panelH/2 + 24, 32, 32, 0x000000, 0);
         const closeText = this.add.text(panelW/2 - 24, -panelH/2 + 12, '✕',
             { fontFamily:'Arial, Helvetica, sans-serif', fontSize:'18px', color:'#666' }
@@ -92,28 +98,27 @@ export default class ResultScene extends Phaser.Scene {
 
         injectStylesOnce();
 
-        const domTop = -panelH/2 + 52;
+        // ===== DOM: đẩy bảng lên & chiếm trọn chiều cao hữu ích
+        const DOM_PAD_TOP = PAD_TOP;
+        const DOM_PAD_BOTTOM = PAD_BOTTOM;
+        const domTop = -panelH/2 + DOM_PAD_TOP;
+        const domHeight = panelH - (DOM_PAD_TOP + DOM_PAD_BOTTOM);
+
         const dom = this.add.dom(0, domTop).createFromHTML(
-            buildTableHTML(panelW - 40, panelH - 100, columns, rows.length ? rows : [
+            buildTableHTML(panelW - 40, domHeight, columns, rows.length ? rows : [
                 { group:'(không có dữ liệu)', lightMode:'', w1:'', w2:'', w3:'', w4:'' }
             ])
         );
         dom.setOrigin(0.5,0);
         container.add(dom);
 
-        // Animation mở
+        // animation
         container.setAlpha(0).setScale(0.96);
-        this.tweens.add({
-            targets: container,
-            alpha: 1,
-            scale: 1,
-            duration: 220,
-            ease: 'Cubic.easeOut'
-        });
+        this.tweens.add({ targets: container, alpha: 1, scale: 1, duration: 220, ease: 'Cubic.easeOut' });
         (container as any).__animated = true;
         (this as any).__container = container;
 
-        // ESC để đóng
+        // ESC
         this.esc = (e: KeyboardEvent) => { if (e.key === 'Escape') this.close(); };
         window.addEventListener('keydown', this.esc);
     }
@@ -123,15 +128,8 @@ export default class ResultScene extends Phaser.Scene {
         const container = (this as any).__container as Phaser.GameObjects.Container | undefined;
         if (container && (container as any).__animated) {
             this.tweens.add({
-                targets: container,
-                alpha: 0,
-                scale: 0.96,
-                duration: 160,
-                ease: 'Cubic.easeIn',
-                onComplete: () => {
-                    if (this.returnTo) this.scene.resume(this.returnTo);
-                    this.scene.stop();
-                }
+                targets: container, alpha: 0, scale: 0.96, duration: 160, ease: 'Cubic.easeIn',
+                onComplete: () => { if (this.returnTo) this.scene.resume(this.returnTo); this.scene.stop(); }
             });
         } else {
             if (this.returnTo) this.scene.resume(this.returnTo);
@@ -173,9 +171,9 @@ function pivotToTable(
             const k = `${plant}|${mode}`;
             rowMap.set(k, {
                 group: prettyPlant(plant),
-                groupKey: plant,          // để CSS tùy biến theo loại cây nếu muốn
+                groupKey: plant,
                 lightMode: prettyMode(mode),
-                modeKey: mode,            // dùng render badge màu
+                modeKey: mode,
                 w1:'', w2:'', w3:'', w4:''
             } as any);
         }
@@ -199,7 +197,7 @@ function pivotToTable(
                 const row = rowMap.get(k);
                 if (!row) continue;
 
-                const htmlText = formatCell(cell.height, cell.leaves); // chứa <br/>
+                const htmlText = formatCell(cell.height, cell.leaves); // có <br/>
                 if (wn === 1) (row as any).w1 = htmlText;
                 if (wn === 2) (row as any).w2 = htmlText;
                 if (wn === 3) (row as any).w3 = htmlText;
@@ -217,10 +215,11 @@ function formatCell(height?: number, leaves?: number) {
     const h = height == null ? '' : `${height} cm`;
     const l = leaves == null ? '' : `${leaves} lá`;
     if (!h && !l) return '';
-    return `${h}${h && l ? '<br/>' : ''}${l}`; // xuống dòng 2 phần
+    return `${h}${h && l ? '<br/>' : ''}${l}`;
 }
 
 function prettyPlant(p: string) {
+    // bạn có thể đổi 'lettuce' -> 'Rau cải' nếu muốn
     const map: Record<string,string> = { 'lettuce':'Rau cải', 'morning-glory':'Rau muống' };
     return map[p] ?? p;
 }
@@ -229,7 +228,7 @@ function prettyMode(m: string) {
     return map[m] ?? m;
 }
 
-
+// alias
 function normalizePlantOrNull(plant?: string): string | null {
     if (!plant) return null;
     const p = plant.trim();
@@ -262,22 +261,20 @@ function buildTableHTML(
 ) {
     const head = columns.map(c => `<th>${esc(c.label)}</th>`).join('');
 
-    const body = rows.map((r,i) => {
-        return `
+    const body = rows.map((r,i) => `
     <tr class="${i%2?'odd':'even'}">
       ${columns.map(c => {
-            if (c.key === 'lightMode') {
-                const modeKey = (r as any).modeKey || '';
-                return `<td><span class="rs-badge rs-${esc(modeKey)}">${esc(r[c.key] ?? '')}</span></td>`;
-            }
-            if (c.key === 'w1' || c.key === 'w2' || c.key === 'w3' || c.key === 'w4') {
-                // các ô tuần có thể chứa <br/>, KHÔNG escape
-                return `<td class="rs-week">${(r as any)[c.key] ?? ''}</td>`;return `<td class="rs-week"><span class="rs-week-inner">${(r as any)[c.key] ?? ''}</span></td>`;
-            }
-            return `<td>${esc(r[c.key] ?? '')}</td>`;
-        }).join('')}
-    </tr>`;
-    }).join('');
+        if (c.key === 'lightMode') {
+            const modeKey = (r as any).modeKey || '';
+            return `<td><span class="rs-badge rs-${esc(modeKey)}">${esc(r[c.key] ?? '')}</span></td>`;
+        }
+        if (c.key === 'w1' || c.key === 'w2' || c.key === 'w3' || c.key === 'w4') {
+            // dùng inner để khối giữa, text trái & cùng điểm bắt đầu
+            return `<td class="rs-week"><span class="rs-week-inner">${(r as any)[c.key] ?? ''}</span></td>`;
+        }
+        return `<td>${esc(r[c.key] ?? '')}</td>`;
+    }).join('')}
+    </tr>`).join('');
 
     return `
     <div class="rs-wrapper" style="width:${w}px;height:${h}px;">
@@ -296,10 +293,6 @@ function buildTableHTML(
         </table>
       </div>
     </div>
-    <script>
-      const btn = document.getElementById('rs-close');
-      if (btn) btn.onclick = () => window.dispatchEvent(new CustomEvent('rs-close'));
-    </script>
   `;
 }
 
@@ -311,17 +304,17 @@ function injectStylesOnce() {
     const css = `
 :root{
   --rs-bg:#ffffff;
-  --rs-head:#0f172a;      /* slate-900 */
-  --rs-sub:#475569;       /* slate-600 */
-  --rs-border:#e5e7eb;    /* gray-200 */
+  --rs-head:#0f172a;
+  --rs-sub:#475569;
+  --rs-border:#e5e7eb;
   --rs-row:#0b12201a;
-  --rs-row-hover:#eef2ff; /* indigo-50 */
-  --rs-sticky:#f8fafc;    /* slate-50 */
+  --rs-row-hover:#eef2ff;
+  --rs-sticky:#f8fafc;
   --rs-shadow:0 20px 40px rgba(2,6,23,.18);
 }
 
-.rs-wrapper { display:flex; flex-direction:column; gap:12px; }
-.rs-scroll { overflow:auto; max-height:100%; border:1px solid var(--rs-border); border-radius:12px; background:var(--rs-bg); box-shadow:var(--rs-shadow); }
+.rs-wrapper { display:flex; flex-direction:column; gap:12px; height:100%; }
+.rs-scroll  { overflow:auto; max-height:100%; border:1px solid var(--rs-border); border-radius:12px; background:var(--rs-bg); box-shadow:var(--rs-shadow); }
 
 /* Scrollbar (webkit) */
 .rs-scroll::-webkit-scrollbar{ width:10px; height:10px; }
@@ -353,39 +346,27 @@ function injectStylesOnce() {
 /* Second column align left */
 .rs-table thead th:nth-child(2), .rs-table tbody td:nth-child(2) { text-align:left; }
 
-/* Week cell: line-height gọn */
-.rs-table td.rs-week { line-height:1.25; color:#0f172a; }
+/* Week cell: khối giữa, nội dung trái, số thẳng cột */
+.rs-table td.rs-week{ text-align:center; vertical-align:middle; padding:10px 12px; }
+.rs-table td.rs-week .rs-week-inner{
+  display:inline-block; text-align:left; line-height:1.25; color:#0f172a;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Badge chế độ ánh sáng */
 .rs-badge{
   display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700;
   border:1px solid #e2e8f0; background:#f8fafc; color:#0f172a;
 }
-.rs-badge.rs-sun   { background:#fffbeb; border-color:#fde68a; color:#92400e; } /* amber */
-.rs-badge.rs-led   { background:#eff6ff; border-color:#bfdbfe; color:#1e40af; } /* blue */
-.rs-badge.rs-mixed { background:#f0fdf4; border-color:#bbf7d0; color:#166534; } /* green */
-/* Ô tuần: căn giữa khối, giữa theo chiều dọc */
-.rs-table td.rs-week{
-  text-align: center;       /* khối bên trong sẽ được căn giữa theo chiều ngang */
-  vertical-align: middle;   /* giữa theo chiều dọc */
-  padding: 10px 12px;
-}
-
-/* Khối bên trong: inline-block để lấy theo bề rộng dòng dài nhất, text căn trái */
-.rs-table td.rs-week .rs-week-inner{
-  display: inline-block;
-  text-align: left;               /* 2 dòng bắt đầu cùng một điểm */
-  line-height: 1.25;
-  color: #0f172a;
-  font-variant-numeric: tabular-nums; /* số thẳng cột */
-}
-}
+.rs-badge.rs-sun   { background:#fffbeb; border-color:#fde68a; color:#92400e; }
+.rs-badge.rs-led   { background:#eff6ff; border-color:#bfdbfe; color:#1e40af; }
+.rs-badge.rs-mixed { background:#f0fdf4; border-color:#bbf7d0; color:#166534; }
 `;
     const style = document.createElement('style');
     style.textContent = css;
     document.head.appendChild(style);
 
-    // cho phép DOM bấm nút đóng
+    // Optional: close qua sự kiện DOM
     window.addEventListener('rs-close', () => {
         const game = (window as any).Phaser?.GAMES?.[0];
         const scene = game?.scene?.getScene?.('ResultScene');

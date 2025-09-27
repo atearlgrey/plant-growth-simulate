@@ -10,6 +10,7 @@ export default class Preloader extends Phaser.Scene {
     }
 
     preload() {
+        // load background
         this.load.image(TextureKeys.BackgroundRoom, 'assets/background-room.png');
 
         // load button
@@ -41,6 +42,16 @@ export default class Preloader extends Phaser.Scene {
 
         this.load.image(TextureKeys.BucketNoWater, 'assets/water1.png');
         this.load.image(TextureKeys.BucketWater, 'assets/water2.png');
+        
+        // soil icons
+        this.load.image(TextureKeys.GardenSoil, 'assets/right-menu/soil/garden-soil.png');
+        this.load.image(TextureKeys.SandySoil, 'assets/right-menu/soil/sandy-soil.png');
+        this.load.image(TextureKeys.OrganicSoil, 'assets/right-menu/soil/organic-soil.png');
+
+        // pot icons
+        this.load.image(TextureKeys.SmallPot, 'assets/right-menu/pot/small-pot.png');
+        this.load.image(TextureKeys.MediumPot, 'assets/right-menu/pot/medium-pot.png');
+        this.load.image(TextureKeys.LargePot, 'assets/right-menu/pot/large-pot.png');
 
         // voice
         this.load.audio(VoiceKeys.BGM, 'assets/voice/bgm/bgm.mp3');
