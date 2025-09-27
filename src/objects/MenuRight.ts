@@ -62,6 +62,7 @@ export default class RightMenu extends Phaser.GameObjects.Container {
   public setEnabled(enabled: boolean) {
     this.plantMenu.setEnabled(enabled)
     this.lightMenu.setEnabled(enabled)
+    this.waterMenu.setEnabled(enabled)
   }
 
   /** Resize menu khi màn hình thay đổi */
