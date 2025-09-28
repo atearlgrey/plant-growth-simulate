@@ -472,7 +472,7 @@ export default class PlantScene extends Phaser.Scene {
   }
 
   private settingTimer() {
-    // 6s là 1 tuần
+    // 10s là 1 tuần
     const weekTime = 10000;
     const order: WaterType[] = [WaterType.One, WaterType.Two, WaterType.Three];
 
