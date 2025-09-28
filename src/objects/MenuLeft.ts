@@ -52,12 +52,12 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     this.zoomButton.on('pointerdown', () => this.handleZoomButton())
 
     // === Sound ===
-    this.soundButton = this.scene.add.image(0, 500, TextureKeys.ButtonSound).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.soundButton = this.scene.add.image(0, 510, TextureKeys.ButtonSound).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.soundButton])
     this.soundButton.on('pointerdown', () => this.handleSoundButton())
 
     // === Meter ===
-    this.meterButton = this.scene.add.image(0, 600, TextureKeys.ButtonUnMeter).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.meterButton = this.scene.add.image(0, 620, TextureKeys.ButtonUnMeter).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.meterButton])
     this.meterButton.on('pointerdown', () => this.handleMeterButton())
 
