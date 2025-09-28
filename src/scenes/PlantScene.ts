@@ -107,8 +107,8 @@ export default class PlantScene extends Phaser.Scene {
     }
 
     // Window
-    const windowX = width / 3;
-    const windowY = height / 7;
+    const windowX = width / 3 + 30;
+    const windowY = height / 7 - 30;
     if (!this.window) {
       this.window = new Window(this, windowX, windowY);
     } else {

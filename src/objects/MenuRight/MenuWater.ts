@@ -2,13 +2,13 @@ import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
 import FontKeys from 'consts/FontKeys'
 import TextureKeys from 'consts/TextureKeys'
+import WaterType from 'consts/WaterType'
 
 interface RadioButton {
   container: Phaser.GameObjects.Container
   g: Phaser.GameObjects.Graphics
   text: Phaser.GameObjects.Text
-  value: string,
-  icon: Phaser.GameObjects.Image | null
+  value: string
 }
 
 export default class WaterMenu extends Phaser.GameObjects.Container {
@@ -17,6 +17,7 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
   private panelWidth: number
   private btnSize: number
   private gapY: number
+  private wateringIcon: Phaser.GameObjects.Image| undefined
 
   constructor(
     scene: Phaser.Scene,
@@ -70,12 +71,17 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
     this.add(container)
 
     // add icon manual watering
-    const icon = iconWatering ? this.scene.add.image(this.btnSize + text.displayWidth + 90, this.btnSize, TextureKeys.BucketNoWater) : null;
-    icon?.setDisplaySize(this.btnSize * 5, this.btnSize * 5).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
-    icon?.on('pointerdown', () => this.emit(EventKeys.Watering))
-    if (icon) container.add(icon);
-
-    this.waterButtons.push({ container, g, text, value, icon })
+    if (iconWatering) {
+      this.wateringIcon = this.scene.add.image(this.btnSize + text.displayWidth + 70, 0, TextureKeys.BucketNoWater);
+      this.wateringIcon.setDisplaySize(this.btnSize * 5, this.btnSize * 5).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
+      this.wateringIcon.disableInteractive().setAlpha(0.5);
+      this.wateringIcon.on('pointerdown', () => {
+        this.emit(EventKeys.Watering)
+      })
+      container.add(this.wateringIcon);
+    }
+    
+    this.waterButtons.push({ container, g, text, value })
 
     g.on('pointerdown', () => {
       this.selectWater(value)
@@ -101,6 +107,14 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
   private selectWater(mode: string | undefined) {
     this.currentMode = mode
 
+    if (this.currentMode === WaterType.Manual) {
+      this.wateringIcon?.setInteractive()
+      this.wateringIcon?.setAlpha(1)
+    } else {
+      this.wateringIcon?.disableInteractive()
+      this.wateringIcon?.setAlpha(0.5)
+    }
+
     this.waterButtons.forEach(({ g, value }) => {
       g.clear()
       g.fillStyle(value === mode ? 0xffcc00 : 0x0077cc, 1)
@@ -121,17 +135,13 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
   }
 
   public setEnabled(enabled: boolean) {
-    this.waterButtons.forEach(({ g, icon }) => {
+    this.waterButtons.forEach(({ g }) => {
       if (enabled) {
         g.setInteractive()
         g.setAlpha(1)
-        icon?.setInteractive()
-        icon?.setAlpha(1)
       } else {
         g.disableInteractive()
         g.setAlpha(0.5)
-        icon?.disableInteractive()
-        icon?.setAlpha(0.5)
       }
     })
   }
