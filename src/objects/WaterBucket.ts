@@ -1,27 +1,20 @@
 import Phaser from 'phaser';
 import TextureKeys from 'consts/TextureKeys';
 
-interface PlantConfig {
-  leaves: number;
-  height: number;
-  width: number;
-  heightPx: number;
-  widthPx: number;
-  image: string;
-}
-
 export default class WaterBucket extends Phaser.GameObjects.Image {
 
   constructor(
     scene: Phaser.Scene,
     x: number,
-    y: number
+    y: number,
+    width: number,
+    height: number,
   ) {
     super(scene, x, y, '');
 
     scene.add.existing(this);
     this.setTexture(TextureKeys.BucketNoWater);
-    this.setDisplaySize(300, 300);
+    this.setDisplaySize(width, height);
     this.setVisible(false);
   }
 
