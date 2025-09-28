@@ -378,6 +378,11 @@ export default class PlantScene extends Phaser.Scene {
       this.resetTimer();
     });
 
+    this.rightMenu.on(EventKeys.Watering, (mode: WaterType) => {
+      console.log('💡 Manual Watering:', mode);
+      this.waterBucket.wateringPlants(this.plant?.x + 500, this.plant?.y - 150, this.plant?.x + 100, this.plant?.y - 100);
+    });
+
     // 🎯 Slider events
     this.slider.onWeekChanged((week) => {
       this.currentWeek = week;
@@ -470,10 +475,10 @@ export default class PlantScene extends Phaser.Scene {
   private settingTimer() {
     // 10s là 1 tuần
     const weekTime = 10000;
-    const order: WaterType[] = [WaterType.One, WaterType.Two, WaterType.Three];
+    const order: WaterType[] = [WaterType.Manual, WaterType.One, WaterType.Two, WaterType.Three];
 
     // tần suất tưới nước
-    const frequency = order.indexOf(this.waterMode) + 1;
+    const frequency = order.indexOf(this.waterMode);
 
     // Số giây để timer nhảy 1 lần
     const delay = weekTime / (frequency + 1);

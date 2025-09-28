@@ -1,12 +1,14 @@
 import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
 import FontKeys from 'consts/FontKeys'
+import TextureKeys from 'consts/TextureKeys'
 
 interface RadioButton {
   container: Phaser.GameObjects.Container
   g: Phaser.GameObjects.Graphics
   text: Phaser.GameObjects.Text
-  value: string
+  value: string,
+  icon: Phaser.GameObjects.Image | null
 }
 
 export default class WaterMenu extends Phaser.GameObjects.Container {
@@ -40,9 +42,10 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
     this.add(title)
 
     // Options
-    this.createRadioButton('Một tuần 1 lần', 'one')
-    this.createRadioButton('Một tuần 2 lần', 'two')
-    this.createRadioButton('Một tuần 3 lần', 'three')
+    this.createRadioButton('Tự động một tuần 1 lần', 'one')
+    this.createRadioButton('Tự động một tuần 2 lần', 'two')
+    this.createRadioButton('Tự động một tuần 3 lần', 'three')
+    this.createRadioButton('Tưới nước thủ công', 'manual', true)
 
     this.layout()
     scene.add.existing(this)
@@ -51,7 +54,7 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
     this.selectWater(defaultMode)
   }
 
-  private createRadioButton(label: string, value: string) {
+  private createRadioButton(label: string, value: string, iconWatering: boolean = false) {
     const g = this.scene.add.graphics()
     g.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.btnSize, this.btnSize), Phaser.Geom.Rectangle.Contains)
 
@@ -66,7 +69,13 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
     const container = this.scene.add.container(0, 0, [g, text])
     this.add(container)
 
-    this.waterButtons.push({ container, g, text, value })
+    // add icon manual watering
+    const icon = iconWatering ? this.scene.add.image(this.btnSize + text.displayWidth + 90, this.btnSize, TextureKeys.BucketNoWater) : null;
+    icon?.setDisplaySize(this.btnSize * 3, this.btnSize * 3).setOrigin(0.5, 1).setInteractive({ useHandCursor: true });
+    icon?.on('pointerdown', () => this.emit(EventKeys.Watering))
+    if (icon) container.add(icon);
+
+    this.waterButtons.push({ container, g, text, value, icon })
 
     g.on('pointerdown', () => {
       this.selectWater(value)
@@ -112,13 +121,17 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
   }
 
   public setEnabled(enabled: boolean) {
-    this.waterButtons.forEach(({ g }) => {
+    this.waterButtons.forEach(({ g, icon }) => {
       if (enabled) {
         g.setInteractive()
         g.setAlpha(1)
+        icon?.setInteractive()
+        icon?.setAlpha(1)
       } else {
         g.disableInteractive()
         g.setAlpha(0.5)
+        icon?.disableInteractive()
+        icon?.setAlpha(0.5)
       }
     })
   }

@@ -62,6 +62,7 @@ export default class RightMenu extends Phaser.GameObjects.Container {
     this.plantMenu.on(EventKeys.LeafDrag, (data) => this.emit(EventKeys.LeafDrag, data))
     this.lightMenu.on(EventKeys.LightChange, (mode) => this.emit(EventKeys.LightChange, mode))
     this.waterMenu.on(EventKeys.WaterChange, (mode) => this.emit(EventKeys.WaterChange, mode));
+    this.waterMenu.on(EventKeys.Watering, (mode) => this.emit(EventKeys.Watering, mode));
 
     // Add tất cả vào container chính
     this.add([

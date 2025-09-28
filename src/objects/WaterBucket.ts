@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import TextureKeys from 'consts/TextureKeys';
 
 export default class WaterBucket extends Phaser.GameObjects.Image {
+  private isWatering = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -19,6 +20,9 @@ export default class WaterBucket extends Phaser.GameObjects.Image {
   }
 
   public wateringPlants(x1, y1, x2, y2) {
+    if (this.isWatering) return;
+    this.isWatering = true;
+
     var totalTime = 1500
     this.setPosition(x1, y1);
     this.setVisible(true);
@@ -40,6 +44,7 @@ export default class WaterBucket extends Phaser.GameObjects.Image {
 
           this.scene.time.delayedCall(totalTime * 1 / 5, () => {
             this.setVisible(false);
+            this.isWatering = false;
           })
         });
       }
