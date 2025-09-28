@@ -20,7 +20,7 @@ import WaterType from 'consts/WaterType';
 import WaterBucket from 'objects/WaterBucket';
 import PotType from '~/consts/PotType';
 import SoilType from '~/consts/SoilType';
-import Ruler from 'objects/Ruler';
+import Ruler50 from 'objects/Ruler50';
 import ThermoHygrometer from 'objects/ThermoHygrometer';
 
 export default class PlantScene extends Phaser.Scene {
@@ -58,7 +58,7 @@ export default class PlantScene extends Phaser.Scene {
   private pot!: Pot;
   private waterBucket!: WaterBucket;
   private thermoHygrometer!: ThermoHygrometer;
-  private ruler!: Ruler;
+  private ruler!: Ruler50;
 
   constructor() {
     super(SceneKeys.Plant);
@@ -138,7 +138,7 @@ export default class PlantScene extends Phaser.Scene {
 
     // ruler
     if (!this.ruler) {
-      this.ruler = new Ruler(this, this.table.x - this.table.displayWidth / 2 - 150, this.table.y + 40, 70, 650);
+      this.ruler = new Ruler50(this, this.table.x - this.table.displayWidth / 2 - 360, this.table.y, 70, 325);
     } else {
       this.ruler.setPosition(this.table.x - this.table.displayWidth / 2 + 100, this.table.y - this.table.displayHeight / 2);
     }
@@ -355,6 +355,18 @@ export default class PlantScene extends Phaser.Scene {
     this.leftMenu.on(EventKeys.UnZoom, () => {
       console.log('📘 UnZoom');
       this.plant?.hideDialog();
+    });
+
+    this.leftMenu.on(EventKeys.MeterOn, () => {
+      console.log('📘 MeterOn');
+      this.ruler.setVisible(true);
+      this.thermoHygrometer.setVisible(true);
+    });
+
+    this.leftMenu.on(EventKeys.UnMeterOn, () => {
+      console.log('📘 UnMeterOn');
+      this.ruler.setVisible(false);
+      this.thermoHygrometer.setVisible(false);
     });
 
     this.leftMenu.on(EventKeys.Mute, () => {

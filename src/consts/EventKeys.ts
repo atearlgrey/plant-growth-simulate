@@ -12,6 +12,8 @@ enum EventKeys {
   UnZoom = 'process-unzoom',
   Mute = 'process-mute',
   UnMute = 'process-unmute',
+  MeterOn = 'process-meterOn',
+  UnMeterOn = 'process-unMeterOn',
 
   // UI control
   PotDrag = 'pot-drag',

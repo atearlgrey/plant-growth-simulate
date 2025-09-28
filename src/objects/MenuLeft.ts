@@ -11,9 +11,11 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
   private conclusionButton!: Phaser.GameObjects.Image
   private zoomButton!: Phaser.GameObjects.Image
   private soundButton!: Phaser.GameObjects.Image
+  private meterButton!: Phaser.GameObjects.Image
 
   private currentState: StateKeys = StateKeys.Initial
   private currentSoundOn: boolean = true
+  private currentMeterOn: boolean = false
   private currentZoomOn: boolean = false
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
@@ -49,10 +51,15 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
     this.add([this.zoomButton])
     this.zoomButton.on('pointerdown', () => this.handleZoomButton())
 
-    // === Complete ===
+    // === Sound ===
     this.soundButton = this.scene.add.image(0, 500, TextureKeys.ButtonSound).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
     this.add([this.soundButton])
     this.soundButton.on('pointerdown', () => this.handleSoundButton())
+
+    // === Meter ===
+    this.meterButton = this.scene.add.image(0, 600, TextureKeys.ButtonUnMeter).setDisplaySize(btnSize, btnSize).setInteractive({ useHandCursor: true });
+    this.add([this.meterButton])
+    this.meterButton.on('pointerdown', () => this.handleMeterButton())
 
     scene.add.existing(this)
 
@@ -100,6 +107,19 @@ export default class LeftMenu extends Phaser.GameObjects.Container {
       this.currentSoundOn = true;
       this.soundButton.setTexture(TextureKeys.ButtonSound)
       this.emit(EventKeys.UnMute)
+    }
+  }
+
+  /** Xử lý toggle nút meter */
+  private handleMeterButton() {
+    if (this.currentMeterOn === true) {
+      this.currentMeterOn = false;
+      this.meterButton.setTexture(TextureKeys.ButtonUnMeter)
+      this.emit(EventKeys.UnMeterOn)
+    } else {
+      this.currentMeterOn = true;
+      this.meterButton.setTexture(TextureKeys.ButtonMeter)
+      this.emit(EventKeys.MeterOn)
     }
   }
 

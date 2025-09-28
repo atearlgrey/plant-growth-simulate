@@ -19,6 +19,6 @@ export default class ThermoHygrometer extends Phaser.GameObjects.Image {
 
     scene.add.existing(this);
     scene.input.setDraggable(this);
-    //this.setVisible(false);
+    this.setVisible(false);
   }
 }

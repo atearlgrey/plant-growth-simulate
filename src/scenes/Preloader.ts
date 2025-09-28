@@ -25,6 +25,8 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.ButtonUnZoom, 'assets/btn-zoom.png');
         this.load.image(TextureKeys.ButtonSound, 'assets/btn-sound.png');
         this.load.image(TextureKeys.ButtonMute, 'assets/btn-mute.png');
+        this.load.image(TextureKeys.ButtonMeter, 'assets/btn-meter.png');
+        this.load.image(TextureKeys.ButtonUnMeter, 'assets/btn-unmeter.png');
 
         this.load.image(TextureKeys.Window, 'assets/window.png');
         this.load.image(TextureKeys.LampBulb, 'assets/lightled.png');
@@ -34,7 +36,7 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.Table, 'assets/table.png');
         this.load.image(TextureKeys.PlantPot, 'assets/plant-pot.png');
         this.load.image(TextureKeys.ThermoHygrometer, 'assets/thermo-hygrometer.png');
-        this.load.image(TextureKeys.Ruler, 'assets/ruler.png');
+        this.load.image(TextureKeys.Ruler50, 'assets/ruler-50cm.png');
         this.load.image(TextureKeys.PotEmpty, 'assets/pot-empty.png');
         this.load.image(TextureKeys.PotGardenSoil, 'assets/pot-garden-soil.png');
         this.load.image(TextureKeys.PotSandySoil, 'assets/pot-sandy-soil.png');

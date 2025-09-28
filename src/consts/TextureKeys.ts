@@ -16,6 +16,8 @@ enum TextureKeys {
     ButtonUnZoom = 'button-unzoom',
     ButtonSound = 'button-sound',
     ButtonMute = 'button-mute',
+    ButtonMeter = 'button-meter',
+    ButtonUnMeter = 'button-unmeter',
 
     Window = 'window',
     LampBulb = 'lamp-bulb',
@@ -26,7 +28,8 @@ enum TextureKeys {
     Table = 'table',
     PlantPot = 'plant-pot',
     ThermoHygrometer = 'thermo-hygrometer',
-    Ruler = 'ruler',
+    Ruler50 = 'ruler-50cm',
+    Ruler100 = 'ruler-100cm',
 
     DefaultMorningGloryLeaf = 'default-morning-glory-leaf',
     DefaultLettuceLeaf = 'default-lettuce-leaf',
