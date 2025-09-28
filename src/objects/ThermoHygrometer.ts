@@ -35,10 +35,13 @@ export default class ThermoHygrometer extends Phaser.GameObjects.Image {
     scene.input.on('wheel', (_pointer: any, _gameObjects: any, _dx: number, dy: number) => {
       if (!this.isPointerOver) return; // chỉ zoom khi trỏ lên đối tượng này
 
+      var minHeigh = 100;
+      var maxHeigh = 1000;
+
       if (dy > 0) {
-        this.setScale(this.scale * 0.9); // zoom out
+        if (this.displayHeight > minHeigh) this.setScale(this.scale * 0.9); // zoom out
       } else {
-        this.setScale(this.scale * 1.1); // zoom in
+        if (this.displayHeight < maxHeigh) this.setScale(this.scale * 1.1); // zoom in
       }
     });
   }
