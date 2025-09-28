@@ -25,13 +25,13 @@ export default class PlantMenu extends Phaser.GameObjects.Container {
     this.add(title)
 
     const plants = [
-      { key: TextureKeys.MorningGloryLeaf, type: PlantType.MorningGlory, label: 'Rau muống' },
-      { key: TextureKeys.LettuceLeaf, type: PlantType.Lettuce, label: 'Rau cải' }
+      { key: TextureKeys.MorningGloryLeaf, type: PlantType.MorningGlory, label: 'Rau muống', width: 50, height: 55 },
+      { key: TextureKeys.LettuceLeaf, type: PlantType.Lettuce, label: 'Rau cải', width: 50, height: 55 },
     ]
 
     plants.forEach((plant) => {
       // icon
-      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(0.12).setInteractive()
+      const leaf = scene.add.image(0, 0, plant.key).setOrigin(0.5).setScale(1).setDisplaySize(plant.width, plant.height).setInteractive()
       leaf.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
         this.startDragLeaf(plant.key, plant.type, pointer)
       })
