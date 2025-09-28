@@ -36,6 +36,7 @@ enum TextureKeys {
 
     DefaultMorningGloryLeaf = 'default-morning-glory-leaf',
     DefaultLettuceLeaf = 'default-lettuce-leaf',
+    HandPointer = 'hand-pointer',
 
     // soil icons
     GardenSoil = 'garden-soil',
