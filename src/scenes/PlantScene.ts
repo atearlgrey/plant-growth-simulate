@@ -184,72 +184,18 @@ export default class PlantScene extends Phaser.Scene {
     const topY = left.y + 90; // cùng y cho cả trái/phải
 
     if (this.lightMode === LightType.Sun || this.lightMode === LightType.Mixed) {
-      this.sunLight = this.drawSunLightFromWindow(this.window, left, right, topY);
+      this.sunLight = this.window.drawSunLightFromWindow(this, this.window, left, right, topY);
     }
 
     if (this.lightMode === LightType.Led || this.lightMode === LightType.Mixed) {
       const bulbPos = this.lamp.getBulbPosition();
-      this.ledLight = this.drawLedLight(bulbPos.x, bulbPos.y + 10, left, right, topY);
+      this.ledLight = this.lamp.drawLedLight(this, bulbPos.x, bulbPos.y + 10, left, right, topY);
       this.lamp.toggle(true);
     }
+
+    this.window.setLightMode(this.lightMode);
+    this.lamp.setLightMode(this.lightMode);
   }
-
-  /** Ánh sáng mặt trời từ cửa sổ xuống mặt bàn */
-  private drawSunLightFromWindow(
-    window: Window,
-    left: { x: number; y: number },
-    right: { x: number; y: number },
-    topY: number
-  ) {
-    const { bottomLeft, bottomRight, topRight } = window.getCorners();
-    const g = this.add.graphics();
-    g.fillStyle(0xffff99, 0.25);
-
-    // ánh sáng phủ toàn bộ chiều ngang mặt bàn
-
-    g.beginPath();
-    g.moveTo(bottomRight.x, bottomRight.y);
-    g.lineTo(topRight.x, topRight.y);
-    g.lineTo(right.x - 55, topY - 90);
-    g.lineTo(left.x, topY);
-    g.closePath();
-    g.fillPath();
-
-    g.beginPath();
-    g.moveTo(bottomLeft.x, bottomLeft.y);
-    g.lineTo(bottomRight.x, bottomRight.y);
-    g.lineTo(left.x, topY);
-    g.lineTo(left.x, topY);
-    g.closePath();
-    g.fillPath();
-
-    g.setDepth(1);
-    return g;
-  }
-
-  /** Ánh sáng LED từ đèn trần xuống mặt bàn */
-  private drawLedLight(
-    ceilingX: number,
-    ceilingY: number,
-    left: { x: number; y: number },
-    right: { x: number; y: number },
-    topY: number
-  ) {
-    const g = this.add.graphics();
-    g.fillStyle(0x99ccff, 0.5);
-
-    g.beginPath();
-    g.moveTo(ceilingX - 40, ceilingY);
-    g.lineTo(ceilingX + 40, ceilingY);
-    g.lineTo(right.x, topY);
-    g.lineTo(left.x, topY);
-    g.closePath();
-    g.fillPath();
-
-    g.setDepth(1);
-    return g;
-  }
-
 
   /** Gom toàn bộ event binding vào 1 chỗ */
   private eventHandlers() {

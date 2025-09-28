@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import TextureKeys from 'consts/TextureKeys'
+import LightType from 'consts/LightType'
 
 export default class Window extends Phaser.GameObjects.Image {
   constructor(scene: Phaser.Scene, x: number, y: number) {
@@ -42,31 +43,45 @@ export default class Window extends Phaser.GameObjects.Image {
     }
   }
 
+  /** Ánh sáng mặt trời từ cửa sổ xuống mặt bàn */
+  public drawSunLightFromWindow(
+    scene: Phaser.Scene,
+    window: Window,
+    left: { x: number; y: number },
+    right: { x: number; y: number },
+    topY: number
+  ) {
+    const { bottomLeft, bottomRight, topRight } = window.getCorners();
+    const g = scene.add.graphics();
+    g.fillStyle(0xffff99, 0.25);
+
+    // ánh sáng phủ toàn bộ chiều ngang mặt bàn
+    g.beginPath();
+    g.moveTo(bottomRight.x, bottomRight.y);
+    g.lineTo(topRight.x, topRight.y);
+    g.lineTo(right.x - 55, topY - 90);
+    g.lineTo(left.x, topY);
+    g.closePath();
+    g.fillPath();
+
+    g.beginPath();
+    g.moveTo(bottomLeft.x, bottomLeft.y);
+    g.lineTo(bottomRight.x, bottomRight.y);
+    g.lineTo(left.x, topY);
+    g.lineTo(left.x, topY);
+    g.closePath();
+    g.fillPath();
+
+    g.setDepth(1);
+    return g;
+  }
+
   /** Highlight 4 ô kính bằng overlay màu vàng nhạt */
-  public highlightGlass(scene: Phaser.Scene) {
-    const edges = this.getEdges()
-    const halfW = this.displayWidth / 2
-    const halfH = this.displayHeight / 2
-
-    const paneW = this.displayWidth / 2 - 10 // trừ khung gỗ
-    const paneH = this.displayHeight / 2 - 10
-
-    const offsetX = [-1, 1]
-    const offsetY = [-1, 1]
-
-    offsetX.forEach((ox) => {
-      offsetY.forEach((oy) => {
-        const rect = scene.add.rectangle(
-          this.x + ox * paneW / 2,
-          this.y + oy * paneH / 2,
-          paneW,
-          paneH,
-          0xffff99,
-          0.3 // alpha
-        )
-        rect.setOrigin(0.5)
-        rect.setDepth(this.depth + 1)
-      })
-    })
+  public setLightMode(lightType: LightType) {
+    if (lightType === LightType.Sun || lightType === LightType.Mixed) {
+      this.setTexture(TextureKeys.WindowSun)
+    } else {
+      this.setTexture(TextureKeys.Window)
+    }
   }
 }
