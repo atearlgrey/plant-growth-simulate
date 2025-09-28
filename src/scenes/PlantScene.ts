@@ -296,23 +296,27 @@ export default class PlantScene extends Phaser.Scene {
     this.leftMenu.on(EventKeys.Zoom, () => {
       console.log('📘 Zoom');
       this.plant?.showDialog();
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.UnZoom, () => {
       console.log('📘 UnZoom');
       this.plant?.hideDialog();
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.MeterOn, () => {
       console.log('📘 MeterOn');
       this.ruler.setVisible(true);
       this.thermoHygrometer.setVisible(true);
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.UnMeterOn, () => {
       console.log('📘 UnMeterOn');
       this.ruler.setVisible(false);
       this.thermoHygrometer.setVisible(false);
+      this.playSelectVoice();
     });
 
     this.leftMenu.on(EventKeys.Mute, () => {
