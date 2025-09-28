@@ -40,6 +40,7 @@ export default class Preloader extends Phaser.Scene {
         this.load.image(TextureKeys.PlantPot, 'assets/plant-pot.png');
         this.load.image(TextureKeys.ThermoHygrometer, 'assets/thermo-hygrometer.png');
         this.load.image(TextureKeys.Ruler50, 'assets/ruler-50cm.png');
+
         this.load.image(TextureKeys.PotEmpty, 'assets/pot-empty.png');
         this.load.image(TextureKeys.PotGardenSoil, 'assets/pot-garden-soil.png');
         this.load.image(TextureKeys.PotSandySoil, 'assets/pot-sandy-soil.png');
@@ -48,6 +49,7 @@ export default class Preloader extends Phaser.Scene {
 
         this.load.image(TextureKeys.MorningGloryLeaf, 'assets/morning-glory-leaf.png');
         this.load.image(TextureKeys.LettuceLeaf, 'assets/lettuce-leaf.png');
+        this.load.image(TextureKeys.HandPointer, 'assets/hand-pointer.png');
 
         this.load.image(TextureKeys.DefaultMorningGloryLeaf, 'assets/morning-glory-leaf.png');
         this.load.image(TextureKeys.DefaultLettuceLeaf, 'assets/lettuce-leaf.png');

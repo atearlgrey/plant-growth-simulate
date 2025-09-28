@@ -4,20 +4,13 @@ import FontKeys from 'consts/FontKeys'
 import TextureKeys from 'consts/TextureKeys'
 import WaterType from 'consts/WaterType'
 
-interface RadioButton {
-  container: Phaser.GameObjects.Container
-  g: Phaser.GameObjects.Graphics
-  text: Phaser.GameObjects.Text
-  value: string
-}
-
 export default class WaterMenu extends Phaser.GameObjects.Container {
-  private waterButtons: RadioButton[] = []
+  private waterButtons: iRadioButton[] = []
   private currentMode: string | undefined
   private panelWidth: number
   private btnSize: number
   private gapY: number
-  private wateringIcon: Phaser.GameObjects.Image| undefined
+  private wateringIcon: Phaser.GameObjects.Image | undefined
 
   constructor(
     scene: Phaser.Scene,
@@ -70,6 +63,14 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
     const container = this.scene.add.container(0, 0, [g, text])
     this.add(container)
 
+    const pointerIcon = this.scene.add.image(-25, 8, TextureKeys.HandPointer) // icon bạn preload sẵn
+      .setOrigin(0.5)
+      .setScale(0.1)
+      .setDisplaySize(32, 25)
+      .setVisible(false) // ẩn mặc định
+
+    container.add(pointerIcon)
+
     // add icon manual watering
     if (iconWatering) {
       this.wateringIcon = this.scene.add.image(this.btnSize + text.displayWidth + 70, 0, TextureKeys.BucketNoWater);
@@ -80,8 +81,8 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
       })
       container.add(this.wateringIcon);
     }
-    
-    this.waterButtons.push({ container, g, text, value })
+
+    this.waterButtons.push({ container, g, text, value, pointerIcon })
 
     g.on('pointerdown', () => {
       this.selectWater(value)
@@ -93,12 +94,17 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
     let currentY = 40 // cách title
     const offsetX = 0 // căn trái, nếu muốn căn giữa thì chỉnh theo panelWidth
 
-    this.waterButtons.forEach(({ container, g }) => {
+    this.waterButtons.forEach(({ container, g, value, pointerIcon }) => {
       container.setPosition(offsetX, currentY)
 
       g.clear()
-      g.fillStyle(0x0077cc, 1)
+      g.fillStyle(value === this.currentMode ? 0xffcc00 : 0x0077cc, 1)
       g.fillRoundedRect(0, 0, this.btnSize, this.btnSize, this.btnSize / 4)
+
+      // hiện/ẩn icon pointer
+      if (pointerIcon) {
+        pointerIcon.setVisible(value === this.currentMode)
+      }
 
       currentY += this.gapY
     })
@@ -115,10 +121,15 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
       this.wateringIcon?.setAlpha(0.5)
     }
 
-    this.waterButtons.forEach(({ g, value }) => {
+    this.waterButtons.forEach(({ g, value, pointerIcon }) => {
       g.clear()
       g.fillStyle(value === mode ? 0xffcc00 : 0x0077cc, 1)
       g.fillRoundedRect(0, 0, this.btnSize, this.btnSize, this.btnSize / 4)
+
+      // hiện/ẩn icon pointer
+      if (pointerIcon) {
+        pointerIcon.setVisible(value === mode)
+      }
     })
 
     this.emit(EventKeys.WaterChange, mode)

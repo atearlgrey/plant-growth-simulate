@@ -1,16 +1,11 @@
 import Phaser from 'phaser'
 import EventKeys from 'consts/EventKeys'
 import FontKeys from 'consts/FontKeys'
-
-interface RadioButton {
-  container: Phaser.GameObjects.Container
-  g: Phaser.GameObjects.Graphics
-  text: Phaser.GameObjects.Text
-  value: string
-}
+import TextureKeys from 'consts/TextureKeys'
+import LightType from 'consts/LightType'
 
 export default class LightMenu extends Phaser.GameObjects.Container {
-  private lightButtons: RadioButton[] = []
+  private lightButtons: iRadioButton[] = []
   private currentMode: string | undefined
   private panelWidth: number
   private btnSize: number
@@ -37,9 +32,9 @@ export default class LightMenu extends Phaser.GameObjects.Container {
     this.add(title)
 
     // tạo các options
-    this.createRadioButton('Tự nhiên', 'sun')
-    this.createRadioButton('Đèn LED', 'led')
-    this.createRadioButton('Hỗn hợp', 'mixed')
+    this.createRadioButton('Tự nhiên', LightType.Sun)
+    this.createRadioButton('Đèn LED', LightType.Led)
+    this.createRadioButton('Hỗn hợp', LightType.Mixed)
 
     this.layout()
     scene.add.existing(this)
@@ -63,7 +58,15 @@ export default class LightMenu extends Phaser.GameObjects.Container {
     const container = this.scene.add.container(0, 0, [g, text])
     this.add(container)
 
-    this.lightButtons.push({ container, g, text, value })
+    const pointerIcon = this.scene.add.image(-25, 8, TextureKeys.HandPointer) // icon bạn preload sẵn
+      .setOrigin(0.5)
+      .setScale(0.1)
+      .setDisplaySize(32, 25)
+      .setVisible(false) // ẩn mặc định
+
+    container.add(pointerIcon)
+
+    this.lightButtons.push({ container, g, text, value, pointerIcon })
 
     g.on('pointerdown', () => {
       this.selectLight(value)
@@ -76,13 +79,18 @@ export default class LightMenu extends Phaser.GameObjects.Container {
     const gap = 30
     const offsetX = 0
 
-    this.lightButtons.forEach(({ container, g }) => {
+    this.lightButtons.forEach(({ container, g, value, pointerIcon }) => {
       container.setPosition(offsetX, currentY)
 
       // reset hình radio
       g.clear()
-      g.fillStyle(0x0077cc, 1)
+      g.fillStyle(value === this.currentMode ? 0xffcc00 : 0x0077cc, 1)
       g.fillRoundedRect(0, 0, this.btnSize, this.btnSize, this.btnSize / 4)
+
+      // hiện/ẩn icon pointer
+      if (pointerIcon) {
+        pointerIcon.setVisible(value === this.currentMode)
+      }
 
       currentY += gap
     })
@@ -91,10 +99,15 @@ export default class LightMenu extends Phaser.GameObjects.Container {
   private selectLight(mode: string | undefined) {
     this.currentMode = mode
 
-    this.lightButtons.forEach(({ g, value }) => {
+    this.lightButtons.forEach(({ g, value, pointerIcon }) => {
       g.clear()
       g.fillStyle(value === mode ? 0xffcc00 : 0x0077cc, 1)
       g.fillRoundedRect(0, 0, this.btnSize, this.btnSize, this.btnSize / 4)
+
+      // hiện/ẩn icon pointer
+      if (pointerIcon) {
+        pointerIcon.setVisible(value === mode)
+      }
     })
 
     this.emit(EventKeys.LightChange, mode)
