@@ -28,6 +28,8 @@ enum TextureKeys {
 
     Table = 'table',
     PlantPot = 'plant-pot',
+    ThermoHygrometer = 'thermo-hygrometer',
+    Ruler = 'ruler',
 
     DefaultMorningGloryLeaf = 'default-morning-glory-leaf',
     DefaultLettuceLeaf = 'default-lettuce-leaf',

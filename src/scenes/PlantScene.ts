@@ -20,6 +20,8 @@ import WaterType from 'consts/WaterType';
 import WaterBucket from 'objects/WaterBucket';
 import PotType from '~/consts/PotType';
 import SoilType from '~/consts/SoilType';
+import Ruler from 'objects/Ruler';
+import ThermoHygrometer from 'objects/ThermoHygrometer';
 
 export default class PlantScene extends Phaser.Scene {
   private plant!: Plant;
@@ -55,6 +57,8 @@ export default class PlantScene extends Phaser.Scene {
   private table!: Table;
   private pot!: Pot;
   private waterBucket!: WaterBucket;
+  private thermoHygrometer!: ThermoHygrometer;
+  private ruler!: Ruler;
 
   constructor() {
     super(SceneKeys.Plant);
@@ -125,9 +129,23 @@ export default class PlantScene extends Phaser.Scene {
       this.table.setPosition(width / 2, height / 2 + 200);
     }
 
+    // thermoHygrometer
+    if (!this.thermoHygrometer) {
+      this.thermoHygrometer = new ThermoHygrometer(this, this.table.x - this.table.displayWidth / 2 - 150, this.table.y + 40, 250, 250);
+    } else {
+      this.thermoHygrometer.setPosition(this.table.x - this.table.displayWidth / 2 - 150, this.table.y + 40);
+    }
+
+    // ruler
+    if (!this.ruler) {
+      this.ruler = new Ruler(this, this.table.x - this.table.displayWidth / 2 - 150, this.table.y + 40, 70, 650);
+    } else {
+      this.ruler.setPosition(this.table.x - this.table.displayWidth / 2 + 100, this.table.y - this.table.displayHeight / 2);
+    }
+
     // WaterBucket
     if (!this.waterBucket) {
-      this.waterBucket = new WaterBucket(this, 0, 0);
+      this.waterBucket = new WaterBucket(this, 0, 0, 300, 300);
     } else {
       this.waterBucket.setPosition(0, 0);
     }
@@ -356,6 +374,22 @@ export default class PlantScene extends Phaser.Scene {
         this.plant.setWeek(week);
       }
       this.playGrowVoice();
+    });
+
+    this.input.on(
+        "drag",
+        (_pointer: Phaser.Input.Pointer, _obj: Phaser.GameObjects.GameObject, dragX: number, dragY: number) => {
+            if (_obj == this.ruler) {
+              this.ruler.setPosition(dragX, dragY);
+            } else if (_obj == this.thermoHygrometer) {
+              this.thermoHygrometer.setPosition(dragX, dragY);
+            }
+        }
+    );
+    this.input.on("dragend",
+        (_pointer: Phaser.Input.Pointer, _obj: Phaser.GameObjects.GameObject, dragX: number, dragY: number) => {
+        if (_obj == this.ruler) {
+        }
     });
   }
 
