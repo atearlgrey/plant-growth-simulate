@@ -15,6 +15,7 @@ export default class WaterBucket extends Phaser.GameObjects.Image {
 
     scene.add.existing(this);
     this.setTexture(TextureKeys.BucketNoWater);
+    this.setDepth(999);
     this.setDisplaySize(width, height);
     this.setVisible(false);
   }
