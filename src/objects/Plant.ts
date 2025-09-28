@@ -98,7 +98,7 @@ export default class Plant extends Phaser.GameObjects.Image {
 
     // Lưu thông tin lá và chiều cao
     this.leavesText.setText('Số lá: ' + config.leaves);
-    this.heightText.setText('Chiều cao: ' + (config.heightPx / 6.5) + ' cm');
+    this.heightText.setText('Chiều cao: ' + (config.heightPx / 6.5).toFixed(0) + ' cm');
     console.log(
       `${this.plantType} (${this.lightMode}) - Week ${week}: ${config.leaves} leaves, ${config.height}cm (${config.heightPx}px), ${config.width}cm (${config.widthPx}px)`
     );
