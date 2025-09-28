@@ -380,7 +380,7 @@ export default class PlantScene extends Phaser.Scene {
 
     this.rightMenu.on(EventKeys.Watering, (mode: WaterType) => {
       console.log('💡 Manual Watering:', mode);
-      this.waterBucket.wateringPlants(this.plant?.x + 500, this.plant?.y - 150, this.plant?.x + 100, this.plant?.y - 100);
+      this.waterBucket.wateringPlants(this.plant?.x + 500, this.rightMenu.getMenuWaterPositionY(), this.plant?.x + 100, this.plant?.y - 100);
     });
 
     // 🎯 Slider events
@@ -512,7 +512,7 @@ export default class PlantScene extends Phaser.Scene {
       // Đến điểm tưới nước
       else {
         console.log("Tưới nước lần" + this.timerCount);
-        this.waterBucket.wateringPlants(this.plant?.x + 500, this.plant?.y - 150, this.plant?.x + 100, this.plant?.y - 100);
+        this.waterBucket.wateringPlants(this.plant?.x + 500, this.rightMenu.getMenuWaterPositionY(), this.plant?.x + 100, this.plant?.y - 100);
       }
     };
   }

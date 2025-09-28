@@ -160,4 +160,8 @@ export default class RightMenu extends Phaser.GameObjects.Container {
 
     this.bg.resize(this.bg.getPanelWidth(), newHeight)
   }
+
+  public getMenuWaterPositionY(): number {
+    return this.waterMenu.y;
+  }
 }
