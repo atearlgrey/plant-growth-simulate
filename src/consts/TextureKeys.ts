@@ -18,7 +18,10 @@ enum TextureKeys {
     ButtonMute = 'button-mute',
 
     Window = 'window',
-    LampBulb = 'lamp-bulb',
+    WindowSun = 'window-sun',
+
+    LightOn = 'light-on',
+    LightOff = 'light-off',
 
     TimelineSlider = 'timeline-slider',
     TimelineCoin = 'timeline-coin',
