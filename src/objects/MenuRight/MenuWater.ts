@@ -71,7 +71,7 @@ export default class WaterMenu extends Phaser.GameObjects.Container {
 
     // add icon manual watering
     const icon = iconWatering ? this.scene.add.image(this.btnSize + text.displayWidth + 90, this.btnSize, TextureKeys.BucketNoWater) : null;
-    icon?.setDisplaySize(this.btnSize * 3, this.btnSize * 3).setOrigin(0.5, 1).setInteractive({ useHandCursor: true });
+    icon?.setDisplaySize(this.btnSize * 5, this.btnSize * 5).setOrigin(0.5, 0.5).setInteractive({ useHandCursor: true });
     icon?.on('pointerdown', () => this.emit(EventKeys.Watering))
     if (icon) container.add(icon);
 
