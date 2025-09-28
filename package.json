@@ -4,7 +4,7 @@
   "description": "A typescript template project for Phaser 3 using Parceljs",
   "scripts": {
     "clean": "rimraf dist",
-    "start": "parcel src/index.html -p 8000",
+    "start": "parcel src/index.html -p 8001",
     "copy-public": "copyfiles -u 1 public/**/* dist",
     "build": "parcel build src/index.html --dist-dir dist --public-url ./",
     "build:prod": "npm run build && cp -r public/* dist/",

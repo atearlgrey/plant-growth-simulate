@@ -197,7 +197,7 @@ function pivotToTable(
                 const row = rowMap.get(k);
                 if (!row) continue;
 
-                const htmlText = formatCell(cell.height, cell.leaves); // có <br/>
+                const htmlText = formatCell(Number.parseInt((cell.heightPx / 6.5).toFixed(0)), cell.leaves); // có <br/>
                 if (wn === 1) (row as any).w1 = htmlText;
                 if (wn === 2) (row as any).w2 = htmlText;
                 if (wn === 3) (row as any).w3 = htmlText;
