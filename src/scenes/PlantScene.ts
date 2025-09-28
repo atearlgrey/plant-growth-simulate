@@ -107,8 +107,8 @@ export default class PlantScene extends Phaser.Scene {
     }
 
     // Window
-    const windowX = width / 3 + 60;
-    const windowY = height / 7 - 30;
+    const windowX = width / 3 + 70;
+    const windowY = height / 7 - 35;
     if (!this.window) {
       this.window = new Window(this, windowX, windowY);
     } else {
@@ -380,7 +380,7 @@ export default class PlantScene extends Phaser.Scene {
 
     this.rightMenu.on(EventKeys.Watering, (mode: WaterType) => {
       console.log('💡 Manual Watering:', mode);
-      this.waterBucket.wateringPlants(this.plant?.x + 500, this.rightMenu.getMenuWaterPositionY(), this.plant?.x + 100, this.plant?.y - 100);
+      this.waterBucket.wateringPlants(this.plant?.x + 500, this.rightMenu.getMenuWaterPositionY(), this.plant?.x + 100, this.plant?.y - 150);
     });
 
     // 🎯 Slider events
@@ -512,7 +512,7 @@ export default class PlantScene extends Phaser.Scene {
       // Đến điểm tưới nước
       else {
         console.log("Tưới nước lần" + this.timerCount);
-        this.waterBucket.wateringPlants(this.plant?.x + 500, this.rightMenu.getMenuWaterPositionY(), this.plant?.x + 100, this.plant?.y - 100);
+        this.waterBucket.wateringPlants(this.plant?.x + 500, this.rightMenu.getMenuWaterPositionY(), this.plant?.x + 100, this.plant?.y - 150);
       }
     };
   }
